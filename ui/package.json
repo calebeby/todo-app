@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "type": "tsc",
+    "type:watch": "tsc --watch"
   },
   "dependencies": {
     "preact": "^10.5.7"
