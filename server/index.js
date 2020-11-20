@@ -16,7 +16,7 @@ app.listen(3000)
 const { DB_USER, DB_PASSWORD } = process.env
 
 if (!DB_USER) throw new Error('Database user is required')
-if (!DB_PASSWORD) throw new Error('Database user is required')
+if (!DB_PASSWORD) throw new Error('Database password is required')
 
 const main = async () => {
   const client = new pg.Client({
