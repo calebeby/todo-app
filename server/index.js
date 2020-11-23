@@ -7,11 +7,6 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 const app = polka()
-app.get('/', (req, res) => {
-  res.end('Hello World!')
-})
-
-app.listen(3000)
 
 const { DB_USER, DB_PASSWORD } = process.env
 
@@ -25,12 +20,20 @@ const main = async () => {
     database: 'todo-app',
   })
   await client.connect()
-  const res = await client.query(sql`
-SELECT *
-FROM "table"
-`)
-  console.log(res.rows)
+
+  app.get('/', async (req, res) => {
+    const response = JSON.stringify(
+      (
+        await client.query(sql`
+  SELECT *
+  FROM "table"
+  `)
+      ).rows,
+    )
+    res.end(response)
+  })
+
+  app.listen(3000)
 }
 
 main()
-
