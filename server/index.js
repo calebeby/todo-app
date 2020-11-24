@@ -22,7 +22,7 @@ const main = async () => {
   await client.connect()
   
   //Retrieve all tasks in a week based on the start and end date
-  app.get('/task', async (req, res) => {
+  app.get('/tasks', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
@@ -37,7 +37,7 @@ const main = async () => {
   })
 
   //retrieve task based on ID
-  app.get('/task/:id', async (req, res) => {
+  app.get('/tasks/:id', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
@@ -51,7 +51,7 @@ const main = async () => {
   })
 
   //retrieve all not done tasks
-  app.get('/task', async (req, res) => {
+  app.get('/tasks', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
