@@ -4,6 +4,7 @@ import { sql } from 'sqliterally'
 import * as dotenv from 'dotenv'
 import { json } from 'body-parser'
 import send from '@polka/send-type'
+import cors from 'cors'
 
 // Load environment variables from .env file
 dotenv.config()
@@ -11,6 +12,7 @@ dotenv.config()
 const app = polka()
 
 app.use(json())
+app.use(cors({ origin: '*' }))
 
 const { DB_USER, DB_PASSWORD } = process.env
 

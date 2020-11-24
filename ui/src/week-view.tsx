@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'preact/hooks'
 const lengthOfDay = 24 * 60 * 60 * 1000
-
+const lengthOfWeek = 7 * lengthOfDay
 interface Task {
   id: number
   title: string
   description: string
-  dueDate: Date
-  isDone: boolean
+  due_date: Date
+  is_done: boolean
 }
+const now = new Date()
 export const WeekView = () => {
-  const now = new Date()
-  const sunday = now.getTime() - now.getDay() * lengthOfDay
+  const [sunday, setSunday] = useState(
+    now.getTime() - now.getDay() * lengthOfDay,
+  )
   const daysOfWeek = Array<Date>(7)
   for (let i = 0; i < 7; i++) {
     daysOfWeek[i] = new Date(sunday + i * lengthOfDay)
@@ -20,22 +22,38 @@ export const WeekView = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   useEffect(() => {
     fetch(
-      `https://cors-anywhere.herokuapp.com/https://api.mocki.io/v1/0ca72e4f`,
+      `http://localhost:5000/tasks/?start=${startDate.toUTCString()}&end=${endDate.toUTCString()}`,
     )
       .then((res) => res.json())
-      .then((data: (Task & { dueDate: string })[]) => {
+      .then((data: (Task & { due_date: string })[]) => {
         setTasks(
-          data.map((task) => ({ ...task, dueDate: new Date(task.dueDate) })),
+          data.map((task) => ({ ...task, due_date: new Date(task.due_date) })),
         )
       })
-  }, [])
+  }, [sunday])
 
   // TODO: switch weeks
-  // TODO: toggle isDone from checkbox
+  // TODO: toggle is_done from checkbox
 
   return (
     <>
-      <h1>Week View</h1>
+      <div>
+        <h1>Week View</h1>
+        <button
+          onClick={() => {
+            setSunday(sunday - lengthOfWeek)
+          }}
+        >
+          previous
+        </button>
+        <button
+          onClick={() => {
+            setSunday(sunday + lengthOfWeek)
+          }}
+        >
+          next
+        </button>
+      </div>
       <div class="week">
         {daysOfWeek.map((day) => {
           return (
@@ -50,45 +68,28 @@ export const WeekView = () => {
                 {tasks
                   .filter((task) => {
                     return (
-                      task.dueDate.getDate() === day.getDate() &&
-                      task.dueDate.getMonth() === day.getMonth() &&
-                      task.dueDate.getFullYear() === day.getFullYear()
+                      task.due_date.getDate() === day.getDate() &&
+                      task.due_date.getMonth() === day.getMonth() &&
+                      task.due_date.getFullYear() === day.getFullYear()
                     )
                   })
                   .map((task) => {
                     return (
-                      <>
-                        <li class="weekday-task">
-                          <input
-                            type="checkbox"
-                            checked={task.isDone}
-                            disabled
-                          ></input>
-                          <span>{task.title}</span>
-                          <span>
-                            {task.dueDate.toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: 'numeric',
-                              dayPeriod: 'short',
-                            })}
-                          </span>
-                        </li>
-                        <li class="weekday-task">
-                          <input
-                            type="checkbox"
-                            checked={task.isDone}
-                            disabled
-                          ></input>
-                          <span>{task.title}</span>
-                          <span>
-                            {task.dueDate.toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: 'numeric',
-                              dayPeriod: 'short',
-                            })}
-                          </span>
-                        </li>
-                      </>
+                      <li class="weekday-task">
+                        <input
+                          type="checkbox"
+                          checked={task.is_done}
+                          disabled
+                        ></input>
+                        <span>{task.title}</span>
+                        <span>
+                          {task.due_date.toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            dayPeriod: 'short',
+                          })}
+                        </span>
+                      </li>
                     )
                   })}
               </ol>
