@@ -20,7 +20,7 @@ const main = async () => {
     database: 'todo-app',
   })
   await client.connect()
-  
+
   //Retrieve all tasks in a week based on the start and end date
   app.get('/tasks', async (req, res) => {
     const response = JSON.stringify(
@@ -28,8 +28,8 @@ const main = async () => {
         await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE task.duedate >= ${req.query.start} AND
-  task.duedate <= ${req.query.end}
+  WHERE task.due_date >= ${req.query.start} AND
+  task.due_date <= ${req.query.end}
   `)
       ).rows,
     )
@@ -57,7 +57,7 @@ const main = async () => {
         await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE task.isdone = false
+  WHERE task.is_done = false
   `)
       ).rows,
     )
