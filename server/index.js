@@ -2,11 +2,15 @@ import pg from 'pg'
 import polka from 'polka'
 import { sql } from 'sqliterally'
 import * as dotenv from 'dotenv'
+import { json } from 'body-parser'
+import send from '@polka/send-type'
 
 // Load environment variables from .env file
 dotenv.config()
 
 const app = polka()
+
+app.use(json())
 
 const { DB_USER, DB_PASSWORD } = process.env
 
@@ -22,15 +26,28 @@ const main = async () => {
   await client.connect()
 
   app.get('/', async (req, res) => {
-    const response = JSON.stringify(
-      (
-        await client.query(sql`
-  SELECT *
-  FROM "table"
-  `)
-      ).rows,
+    res.end('hello world')
+  })
+
+  app.post('/tasks', async (req, res) => {
+    if (typeof req.body !== 'object')
+      return send(res, 400, 'request body is required to create a task')
+    const { title, description, dueDate } = req.body
+    if (typeof title !== 'string')
+      return send(res, 400, 'task title is required and must be a string')
+    if (typeof description !== 'string')
+      return send(res, 400, 'task description is required and must be a string')
+    if (typeof dueDate !== 'string')
+      return send(res, 400, 'task dueDate is required and must be a string')
+
+    send(
+      res,
+      200,
+      await client.query(sql`
+INSERT INTO task(title, description, duedate)
+VALUES (${title}, ${description}, ${dueDate})
+  `).rows,
     )
-    res.end(response)
   })
 
   app.listen(3000)
