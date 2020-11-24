@@ -35,7 +35,6 @@ const main = async () => {
     res.end(response)
   })
 
-  //retrieve all not done tasks
   app.get('/tasks', async (req, res) => {
     if (req.query.start && req.query.end) {
       //Retrieve all tasks in a week based on the start and end date
@@ -51,6 +50,7 @@ const main = async () => {
       )
       res.end(response)
     } else {
+      //retrieve all not done tasks
       const response = JSON.stringify(
         (
           await client.query(sql`
