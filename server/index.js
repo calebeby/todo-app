@@ -40,14 +40,18 @@ const main = async () => {
     if (typeof dueDate !== 'string')
       return send(res, 400, 'task dueDate is required and must be a string')
 
-    send(
-      res,
-      200,
-      await client.query(sql`
-INSERT INTO task(title, description, duedate)
-VALUES (${title}, ${description}, ${dueDate})
-  `).rows,
-    )
+    const queryResult = await client.query(sql`
+      INSERT INTO task(title, description, duedate)
+      VALUES (${title}, ${description}, ${dueDate})
+      RETURNING id
+    `)
+    const newId = queryResult.rows[0]?.id
+
+    if (newId !== undefined) {
+      send(res, 201, { id: newId })
+    } else {
+      send(res, 500)
+    }
   })
 
   app.listen(3000)
