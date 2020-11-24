@@ -22,14 +22,14 @@ const main = async () => {
   await client.connect()
   
   //Retrieve all tasks in a week based on the start and end date
-  app.get('/', async (req, res) => {
+  app.get('/task', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE "task.dueDate" >= req.query.start AND
-  "task.dueDate" <= req.query.end
+  WHERE task.duedate >= ${req.query.start} AND
+  task.duedate <= ${req.query.end}
   `)
       ).rows,
     )
@@ -37,13 +37,13 @@ const main = async () => {
   })
 
   //retrieve task based on ID
-  app.get('/', async (req, res) => {
+  app.get('/task/:id', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE "task.id" = req.query
+  WHERE task.id = ${req.params.id}
   `)
       ).rows,
     )
@@ -51,13 +51,13 @@ const main = async () => {
   })
 
   //retrieve all not done tasks
-  app.get('/', async (req, res) => {
+  app.get('/task', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE "task.isDone" = false
+  WHERE task.isdone = false
   `)
       ).rows,
     )
