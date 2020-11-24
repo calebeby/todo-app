@@ -75,7 +75,7 @@ const main = async () => {
           id = ${id}
         RETURNING *
     `)
-    send(res, 200,queryResult.rows[0])
+    send(res, 200, queryResult.rows[0])
   })
 
   app.listen(3000)
