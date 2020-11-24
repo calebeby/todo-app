@@ -32,17 +32,19 @@ const main = async () => {
   app.post('/tasks', async (req, res) => {
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to create a task')
-    const { title, description, dueDate } = req.body
+    const { title, description, due_date, is_done } = req.body
     if (typeof title !== 'string')
       return send(res, 400, 'task title is required and must be a string')
     if (typeof description !== 'string')
       return send(res, 400, 'task description is required and must be a string')
-    if (typeof dueDate !== 'string')
-      return send(res, 400, 'task dueDate is required and must be a string')
+    if (typeof due_date !== 'string')
+      return send(res, 400, 'task due_date is required and must be a string')
+    if (typeof is_done !== 'string')
+      return send(res, 400, 'task is_done is required and must be a string')
 
     const queryResult = await client.query(sql`
       INSERT INTO task(title, description, due_date)
-      VALUES (${title}, ${description}, ${dueDate})
+      VALUES (${title}, ${description}, ${due_date})
       RETURNING id
     `)
     const newId = queryResult.rows[0]?.id
