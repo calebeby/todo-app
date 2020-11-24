@@ -21,16 +21,47 @@ const main = async () => {
   })
   await client.connect()
 
-  app.get('/', async (req, res) => {
+  //retrieve task based on ID
+  app.get('/tasks/:id', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
   SELECT *
-  FROM "table"
+  FROM "task"
+  WHERE task.id = ${req.params.id}
   `)
-      ).rows,
+      ).rows[0],
     )
     res.end(response)
+  })
+
+  app.get('/tasks', async (req, res) => {
+    if (req.query.start && req.query.end) {
+      //Retrieve all tasks in a week based on the start and end date
+      const response = JSON.stringify(
+        (
+          await client.query(sql`
+  SELECT *
+  FROM "task"
+  WHERE task.due_date >= ${req.query.start} AND
+  task.due_date <= ${req.query.end}
+  `)
+        ).rows,
+      )
+      res.end(response)
+    } else {
+      //retrieve all not done tasks
+      const response = JSON.stringify(
+        (
+          await client.query(sql`
+    SELECT *
+    FROM "task"
+    WHERE task.is_done = false
+    `)
+        ).rows,
+      )
+      res.end(response)
+    }
   })
 
   app.listen(5000)
