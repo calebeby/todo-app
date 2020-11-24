@@ -78,7 +78,7 @@ const main = async () => {
     send(res, 200, queryResult.rows[0])
   })
 
-  app.listen(3000)
+  app.listen(5000)
 }
 
 main()
