@@ -22,7 +22,7 @@ const main = async () => {
   await client.connect()
   
   //Retrieve all tasks in a week based on the start and end date
-  app.get('/', async (req, res) => {
+  app.get('/tasks', async (req, res) => {
     const response = JSON.stringify(
       (
         await client.query(sql`
