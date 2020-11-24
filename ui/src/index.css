@@ -21,10 +21,35 @@ body {
 }
 
 .weekday {
-  display: flex;
-  justify-content: space-between;
   border: 1px solid rgb(177, 177, 177);
   border-top: 0;
   border-bottom: 0;
   padding: 0 10px;
+}
+
+.weekday-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.weekday-task {
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  grid-gap: 0.5em;
+  margin: 0.5em 0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  background-color: #2188f3;
+  color: white;
+}
+
+.weekday-task > input {
+  margin: 0;
+}
+
+.weekday-task-list {
+  padding: 0;
+  margin: 1em 0;
 }
