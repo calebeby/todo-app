@@ -41,7 +41,7 @@ const main = async () => {
       return send(res, 400, 'task dueDate is required and must be a string')
 
     const queryResult = await client.query(sql`
-      INSERT INTO task(title, description, duedate)
+      INSERT INTO task(title, description, due_date)
       VALUES (${title}, ${description}, ${dueDate})
       RETURNING id
     `)
