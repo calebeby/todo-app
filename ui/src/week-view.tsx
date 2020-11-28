@@ -37,22 +37,33 @@ export const WeekView = () => {
 
   return (
     <>
-      <div>
+      <div class="weekview-header">
         <h1>Week View</h1>
-        <button
-          onClick={() => {
-            setSunday(sunday - lengthOfWeek)
-          }}
-        >
-          previous
-        </button>
-        <button
-          onClick={() => {
-            setSunday(sunday + lengthOfWeek)
-          }}
-        >
-          next
-        </button>
+        <h1>
+          {daysOfWeek[0].getMonth() === daysOfWeek[6].getMonth()
+            ? daysOfWeek[0].toLocaleDateString('en-US', { month: 'long' })
+            : `${daysOfWeek[0].toLocaleDateString('en-US', {
+                month: 'long',
+              })}-${daysOfWeek[6].toLocaleDateString('en-US', {
+                month: 'long',
+              })}`}
+        </h1>
+        <div>
+          <button
+            onClick={() => {
+              setSunday(sunday - lengthOfWeek)
+            }}
+          >
+            previous
+          </button>
+          <button
+            onClick={() => {
+              setSunday(sunday + lengthOfWeek)
+            }}
+          >
+            next
+          </button>
+        </div>
       </div>
       <div class="week">
         {daysOfWeek.map((day) => {
@@ -86,6 +97,7 @@ export const WeekView = () => {
                           {task.due_date.toLocaleTimeString('en-US', {
                             hour: 'numeric',
                             minute: 'numeric',
+                            //@ts-ignore
                             dayPeriod: 'short',
                           })}
                         </span>

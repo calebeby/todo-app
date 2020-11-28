@@ -53,3 +53,16 @@ body {
   padding: 0;
   margin: 1em 0;
 }
+
+.weekview-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 10px;
+  
+
+}
+
+.weekview-header :last-child {
+  justify-self: end;
+}
