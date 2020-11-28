@@ -5,14 +5,24 @@ body {
 }
 
 #app {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
   height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+.week-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
 }
 
 .week {
@@ -35,14 +45,20 @@ body {
 .weekday-task {
   list-style-type: none;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   grid-gap: 0.5em;
   margin: 0.5em 0;
   padding: 0.2rem 0.4rem;
   border-radius: 0.3rem;
   background-color: #2188f3;
+}
+
+.weekday-task a {
   color: white;
+  text-decoration: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
 }
 
 .weekday-task > input {
@@ -59,10 +75,36 @@ body {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 10px;
-  
-
 }
 
 .weekview-header :last-child {
   justify-self: end;
+}
+
+.task-view {
+  background: black;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.task-popup {
+  width: 40em;
+  height: 50em;
+  max-width: calc(100vw - 10rem);
+  max-height: calc(100vh - 10rem);
+  background: white;
+  border-radius: 0.5em;
+  padding: 1.5em;
+}
+
+.task-popup h1 {
+  display: flex;
+  align-items: center;
+  grid-gap: 10px;
+}
+
+.task-popup h1 input {
+  margin: 0;
 }

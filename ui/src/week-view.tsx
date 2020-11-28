@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'preact/hooks'
+import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
-interface Task {
-  id: number
-  title: string
-  description: string
-  due_date: Date
-  is_done: boolean
-}
+
 const now = new Date()
 export const WeekView = () => {
   const [sunday, setSunday] = useState(
@@ -32,11 +27,10 @@ export const WeekView = () => {
       })
   }, [sunday])
 
-  // TODO: switch weeks
   // TODO: toggle is_done from checkbox
 
   return (
-    <>
+    <div class="week-view">
       <div class="weekview-header">
         <h1>Week View</h1>
         <h1>
@@ -84,6 +78,11 @@ export const WeekView = () => {
                       task.due_date.getFullYear() === day.getFullYear()
                     )
                   })
+                  .sort(
+                    (a, b) =>
+                      // @ts-ignore
+                      a.due_date - b.due_date,
+                  )
                   .map((task) => {
                     return (
                       <li class="weekday-task">
@@ -91,16 +90,17 @@ export const WeekView = () => {
                           type="checkbox"
                           checked={task.is_done}
                           disabled
-                        ></input>
-                        <span>{task.title}</span>
-                        <span>
-                          {task.due_date.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            //@ts-ignore
-                            dayPeriod: 'short',
-                          })}
-                        </span>
+                        />
+                        <a href={`/tasks/${task.id}`}>
+                          <span>{task.title}</span>
+                          <span>
+                            {task.due_date.toLocaleTimeString('en-US', {
+                              hour: 'numeric',
+                              minute: 'numeric',
+                              dayPeriod: 'short',
+                            })}
+                          </span>
+                        </a>
                       </li>
                     )
                   })}
@@ -109,6 +109,14 @@ export const WeekView = () => {
           )
         })}
       </div>
-    </>
+    </div>
   )
+}
+
+declare global {
+  namespace Intl {
+    interface DateTimeFormatOptions {
+      dayPeriod?: string
+    }
+  }
 }
