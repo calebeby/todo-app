@@ -9,12 +9,13 @@ CREATE TABLE public.task
 CREATE TABLE public.label
 (
     id SERIAL,
-    name text COLLATE pg_catalog."default",
-    color text COLLSTE pg_catalog."default",
-    iscolumn boolean
+    name text NOT NULL,
+    color text NOT NULL,
+    is_column boolean
 )
 CREATE TABLE public.task_label
 (
-    label_id integer NOT NULL,
-    task_id integer NOT NULL
+    label_id integer NOT NULL references task(id),
+    task_id integer NOT NULL references label(id),
+    PRIMARY KEY (label_id, task_id)
 )
