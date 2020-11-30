@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
+import { updateTask } from './request'
 import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
@@ -88,8 +89,11 @@ export const WeekView = () => {
                       <li class="weekday-task">
                         <input
                           type="checkbox"
-                          checked={task.is_done}
-                          disabled
+                          checked={task?.is_done}
+                          onChange={(e) => {
+                            const checked = e.currentTarget.checked
+                            updateTask({ is_done: checked }, task.id)
+                          }}
                         />
                         <a href={`/tasks/${task.id}`}>
                           <span>{task.title}</span>

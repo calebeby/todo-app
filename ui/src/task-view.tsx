@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'preact/hooks'
 import { route } from './app'
+import { updateTask } from './request'
 import { Task } from './task'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
+  const [isEditingTitle, setEditingTitle] = useState(false)
   useEffect(() => {
     fetch(`http://localhost:5000/tasks/${taskId}`)
       .then((res) => res.json())
@@ -43,19 +45,52 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
             checked={task?.is_done}
             onChange={(e) => {
               const checked = e.currentTarget.checked
-              fetch(`http://localhost:5000/tasks/${taskId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ is_done: checked }),
-              }).then((res) => res.json())
+              updateTask({ is_done: checked }, taskId)
             }}
           />
-          <h1>{task?.title}</h1>
+          {isEditingTitle ? (
+            <input
+              autofocus
+              type="text"
+              value={task?.title}
+              onChange={(e) => {
+                const value = e.currentTarget.value
+                updateTask({ title: value }, taskId)
+              }}
+              onBlur={() => {
+                setEditingTitle(false)
+              }}
+            />
+          ) : (
+            <h1
+              onClick={() => {
+                setEditingTitle(true)
+              }}
+            >
+              {task?.title}
+            </h1>
+          )}
           <button onClick={close}>Close</button>
         </header>
-        <input type="datetime-local" value={dueDate} />
-        <p>{task?.description}</p>
+        <input
+          type="datetime-local"
+          value={dueDate}
+          onChange={(e) => {
+            const value = e.currentTarget.value
+            updateTask({ due_date: new Date(value) }, taskId)
+          }}
+        />
+        <textarea
+          onChange={(e) => {
+            const value = e.currentTarget.value
+            updateTask({ description: value }, taskId)
+          }}
+        >
+          {task?.description}
+        </textarea>
       </div>
     </div>
   )
 }
+
+
