@@ -8,10 +8,10 @@ CREATE TABLE public.task
 )
 CREATE TABLE public.label
 (
-    id SERIAL,
+    id SERIAL PRIMARY KEY,
     name text NOT NULL,
     color text NOT NULL,
-    is_column boolean
+    is_column boolean NOT NULL
 )
 CREATE TABLE public.task_label
 (
