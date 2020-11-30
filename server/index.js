@@ -82,35 +82,35 @@ const main = async () => {
 
   //retrieve task based on ID
   app.get('/tasks/:id', async (req, res) => {
-      const queryResult = await client.query(sql`
+    const queryResult = await client.query(sql`
   SELECT *
   FROM "task"
-  WHERE task.id = ${req.params.id}
+  WHERE ${req.params.id} = task.id
   `)
-      send(res, 200, queryResult.rows[0])
+    send(res, 200, queryResult.rows[0])
   })
 
   app.get('/tasks', async (req, res) => {
     if (req.query.start && req.query.end) {
       //Retrieve all tasks in a week based on the start and end date
-      
-        const queryResult = await client.query(sql`
+
+      const queryResult = await client.query(sql`
   SELECT *
   FROM "task"
   WHERE task.due_date >= ${req.query.start} AND
   task.due_date <= ${req.query.end}
   `)
-      
-        send(res, 200, queryResult.rows)
+
+      send(res, 200, queryResult.rows)
     } else {
       //retrieve all not done tasks
-      
-        const queryResult = await client.query(sql`
+
+      const queryResult = await client.query(sql`
     SELECT *
     FROM "task"
     WHERE task.is_done = false
     `)
-        send(res, 200, queryResult.rows)
+      send(res, 200, queryResult.rows)
     }
   })
 
@@ -168,7 +168,7 @@ const main = async () => {
   SELECT *
   FROM "label"
   `)
-      send(res, 200, queryResult.rows)
+    send(res, 200, queryResult.rows)
   })
 
   //get all tasks associated with a specific label id
@@ -184,13 +184,12 @@ const main = async () => {
 
   //get all labels that are columns
   app.get('/column_labels', async (req, res) => {
-
-        const queryResult = await client.query(sql`
+    const queryResult = await client.query(sql`
   SELECT *
   FROM "label"
   WHERE label.is_column = true;
   `)
-    
+
     send(res, 200, queryResult.rows)
   })
 
