@@ -3,7 +3,7 @@ CREATE TABLE public.task
     id SERIAL PRIMARY KEY,
     title text NOT NULL,
     description text,
-    due_date timestamp with time zone NOT NULL,
+    due_date timestamp with time zone,
     is_done boolean NOT NULL,
 )
 
