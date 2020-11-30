@@ -82,8 +82,12 @@ h3 {
 }
 
 .task-view {
-  background: black;
+  position: fixed;
   height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,15 +100,19 @@ h3 {
   max-height: calc(100vh - 10rem);
   background: white;
   border-radius: 0.5em;
+  display: grid;
   padding: 1.5em;
+  grid-gap: 1.5em;
+  align-content: start;
 }
 
-.task-popup h1 {
-  display: flex;
+.task-popup header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   grid-gap: 10px;
 }
 
-.task-popup h1 input {
+.task-popup header input {
   margin: 0;
 }

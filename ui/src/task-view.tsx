@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'preact/hooks'
+import { route } from './app'
 import { Task } from './task'
 
-export const TaskView = ({ taskId }: { taskId: number }) => {
+export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
   useEffect(() => {
     fetch(`http://localhost:5000/tasks/${taskId}`)
@@ -23,10 +24,20 @@ export const TaskView = ({ taskId }: { taskId: number }) => {
       ':' +
       String(task.due_date.getSeconds()).padStart(2, '0')
 
+  const close = () => route('/')
+
   return (
-    <div class="task-view">
+    <div
+      class="task-view"
+      onClick={(event) => {
+        const clickedOnThisElement = (event.target as HTMLElement).classList.contains(
+          'task-view',
+        )
+        if (clickedOnThisElement) close()
+      }}
+    >
       <div class="task-popup">
-        <h1>
+        <header>
           <input
             type="checkbox"
             checked={task?.is_done}
@@ -39,8 +50,9 @@ export const TaskView = ({ taskId }: { taskId: number }) => {
               }).then((res) => res.json())
             }}
           />
-          {task?.title}
-        </h1>
+          <h1>{task?.title}</h1>
+          <button onClick={close}>Close</button>
+        </header>
         <input type="datetime-local" value={dueDate} />
         <p>{task?.description}</p>
       </div>
