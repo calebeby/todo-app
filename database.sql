@@ -13,3 +13,8 @@ CREATE TABLE public.label
     color text COLLSTE pg_catalog."default",
     iscolumn boolean
 )
+CREATE TABLE public.task_label
+(
+    label_id integer NOT NULL,
+    task_id integer NOT NULL
+)
