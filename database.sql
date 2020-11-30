@@ -15,3 +15,16 @@ CREATE TABLE public."user"
     username text NOT NULL UNIQUE,
     password_hash text NOT NULL,
 )
+CREATE TABLE public.label
+(
+    id SERIAL PRIMARY KEY,
+    name text NOT NULL,
+    color text NOT NULL,
+    is_column boolean NOT NULL
+)
+CREATE TABLE public.task_label
+(
+    label_id integer NOT NULL references task(id),
+    task_id integer NOT NULL references label(id),
+    PRIMARY KEY (label_id, task_id)
+)
