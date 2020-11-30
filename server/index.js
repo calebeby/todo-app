@@ -123,6 +123,95 @@ const main = async () => {
     }
   })
 
+  //label///////////////////////////////////
+  //create new label
+  app.post('/labels', async (req, res) => {
+    if (typeof req.body !== 'object')
+      return send(res, 400, 'request body is required to create a task')
+    const { name, color, iscolumn } = req.body
+    if (typeof name !== 'string')
+      return send(res, 400, 'label name is required and must be a string')
+    if (typeof color !== 'string')
+      return send(res, 400, 'label color is required and must be a string')
+    if (typeof iscolumn !== 'boolean')
+      return send(res, 400, 'label iscolumn is required and must be a string')
+
+    const queryResult = await client.query(sql`
+      INSERT INTO label(name, color, iscolumn)
+      VALUES (${name}, ${color}, ${iscolumn})
+      RETURNING id
+    `)
+    const newId = queryResult.rows[0]?.id
+
+    if (newId !== undefined) {
+      send(res, 201, { id: newId })
+    } else {
+      send(res, 500)
+    }
+  })
+  //update labels
+  app.put('/labels/:id', async (req, res) => {
+    if (typeof req.params.id !== 'string')
+      return send(res, 400, 'label id required to update a label')
+    const id = Number(req.params.id)
+    if (typeof req.body !== 'object')
+      return send(res, 400, 'request body is required to update a label')
+    const { name, color, iscolumn } = req.body
+
+    const queryResult = await client.query(sql`
+      UPDATE label
+        SET
+          name = COALESCE(${name}, name),
+          color = COALESCE(${color}, color),
+          iscolumn = COALESCE(${iscolumn}, iscolumn)
+        WHERE
+          id = ${id}
+        RETURNING *
+    `)
+    send(res, 200, queryResult.rows[0])
+  })
+
+  //get all labels
+  app.get('/labels', async (req, res) => {
+    const response = JSON.stringify(
+      (
+        await client.query(sql`
+  SELECT *
+  FROM "label"
+  `)
+      ).rows,
+    )
+    res.end(response)
+  })
+
+  //get all tasks associated with a specific label id
+  app.get('/labels/:id', async (req, res) => {
+    const response = JSON.stringify(
+      (
+        await client.query(sql`
+  SELECT *
+  FROM "task_label","task"
+  WHERE ${req.params.id} = task_label.label_id AND task.id = task_label.task_id
+  `)
+      ).rows,
+    )
+    res.end(response)
+  })
+
+   //get all labels that are columns
+   app.get('/column_labels', async (req, res) => {
+    const response = JSON.stringify(
+      (
+        await client.query(sql`
+  SELECT *
+  FROM "label"
+  WHERE label.iscolumn = true;
+  `)
+      ).rows,
+    )
+    res.end(response)
+  })
+
   app.listen(5000)
 }
 

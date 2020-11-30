@@ -6,3 +6,10 @@ CREATE TABLE public.task
     due_date timestamp with time zone,
     is_done boolean
 )
+CREATE TABLE public.label
+(
+    id SERIAL,
+    name text COLLATE pg_catalog."default",
+    color text COLLSTE pg_catalog."default",
+    iscolumn boolean
+)
