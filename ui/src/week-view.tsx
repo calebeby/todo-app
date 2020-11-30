@@ -13,8 +13,11 @@ export const WeekView = () => {
     daysOfWeek[i] = new Date(sunday + i * lengthOfDay)
   }
   const startDate = daysOfWeek[0]
+  startDate.setHours(0, 0, 0, 0)
   const endDate = daysOfWeek[daysOfWeek.length - 1]
+  endDate.setHours(23, 59, 59, 999)
   const [tasks, setTasks] = useState<Task[]>([])
+
   useEffect(() => {
     fetch(
       `http://localhost:5000/tasks/?start=${startDate.toUTCString()}&end=${endDate.toUTCString()}`,
