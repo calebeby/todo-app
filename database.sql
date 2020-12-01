@@ -5,6 +5,7 @@ CREATE TABLE public.task
     description text,
     due_date timestamp with time zone,
     is_done boolean NOT NULL,
+    user_id integer NOT NULL references "user"(id)
 )
 
 CREATE TABLE public."user"
@@ -20,7 +21,8 @@ CREATE TABLE public.label
     id SERIAL PRIMARY KEY,
     name text NOT NULL,
     color text NOT NULL,
-    is_column boolean NOT NULL
+    is_column boolean NOT NULL,
+    user_id integer NOT NULL references "user"(id)
 )
 CREATE TABLE public.task_label
 (
