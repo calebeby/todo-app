@@ -120,7 +120,7 @@ const main = async () => {
           is_done = COALESCE(${is_done}, is_done)
         WHERE
           id = ${id}
-          user_id = ${req.userId}
+          AND user_id = ${req.userId}
         RETURNING title, description, due_date, is_done, id
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
