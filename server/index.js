@@ -166,7 +166,6 @@ const main = async () => {
   //label///////////////////////////////////
   //create new label
   app.post('/labels', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to create a task')
     const { name, color, is_column } = req.body
@@ -178,8 +177,8 @@ const main = async () => {
       return send(res, 400, 'label is_column is required and must be a string')
 
     const queryResult = await client.query(sql`
-      INSERT INTO label(name, color, is_column, user_id)
-      VALUES (${name}, ${color}, ${is_column}, ${req.userId})
+      INSERT INTO label(name, color, is_column)
+      VALUES (${name}, ${color}, ${is_column})
       RETURNING id
     `)
     const newId = queryResult.rows[0]?.id
@@ -192,7 +191,6 @@ const main = async () => {
   })
   //update labels
   app.put('/labels/:id', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     if (typeof req.params.id !== 'string')
       return send(res, 400, 'label id required to update a label')
     const id = Number(req.params.id)
@@ -207,44 +205,38 @@ const main = async () => {
           color = COALESCE(${color}, color),
           is_column = COALESCE(${is_column}, is_column)
         WHERE
-          id = ${id} AND user_id = ${req.userId}
+          id = ${id}
         RETURNING *
     `)
-    if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
-    else send(res, 200, queryResult.rows[0])
+    send(res, 200, queryResult.rows[0])
   })
 
   //get all labels
   app.get('/labels', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
   SELECT *
   FROM "label"
-  WHERE label.user_id = ${req.userId}
   `)
-
     send(res, 200, queryResult.rows)
   })
 
   //get all tasks associated with a specific label id
   app.get('/labels/:id', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
   SELECT *
   FROM "task_label","task"
-  WHERE ${req.params.id} = task_label.label_id AND task.id = task_label.task_id AND label.user_id = ${req.userId}
+  WHERE ${req.params.id} = task_label.label_id AND task.id = task_label.task_id
   `)
-    if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
-    else send(res, 200, queryResult.rows)
+
+    send(res, 200, queryResult.rows)
   })
 
   //get all labels that are columns
   app.get('/column_labels', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
   SELECT *
   FROM "label"
-  WHERE label.is_column = true AND user_id = ${req.userId};
+  WHERE label.is_column = true;
   `)
 
     send(res, 200, queryResult.rows)
