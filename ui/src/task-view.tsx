@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'preact/hooks'
 import { route } from './app'
-import { updateTask } from './request'
+import { makeRequest, updateTask } from './request'
 import { Task } from './task'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
   const [isEditingTitle, setEditingTitle] = useState(false)
   useEffect(() => {
-    fetch(`http://localhost:5000/tasks/${taskId}`)
-      .then((res) => res.json())
-      .then((task: Task & { due_date: string }) => {
-        setTask({ ...task, due_date: new Date(task.due_date) })
-      })
+    makeRequest(`/tasks/${taskId}`).then((response) => {
+      const task = response.data as Task & { due_date: string }
+      setTask({ ...task, due_date: new Date(task.due_date) })
+    })
   }, [taskId])
 
   const dueDate =
@@ -92,5 +91,3 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
     </div>
   )
 }
-
-

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
-import { updateTask } from './request'
+import { makeRequest, updateTask } from './request'
 import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
@@ -20,18 +20,15 @@ export const WeekView = () => {
   const [tasks, setTasks] = useState<Task[]>([])
 
   useEffect(() => {
-    fetch(
-      `http://localhost:5000/tasks/?start=${startDate.toUTCString()}&end=${endDate.toUTCString()}`,
-    )
-      .then((res) => res.json())
-      .then((data: (Task & { due_date: string })[]) => {
-        setTasks(
-          data.map((task) => ({ ...task, due_date: new Date(task.due_date) })),
-        )
-      })
+    makeRequest(
+      `/tasks/?start=${startDate.toUTCString()}&end=${endDate.toUTCString()}`,
+    ).then((res) => {
+      const tasks = res.data as (Task & { due_date: string })[]
+      setTasks(
+        tasks.map((task) => ({ ...task, due_date: new Date(task.due_date) })),
+      )
+    })
   }, [sunday])
-
-  // TODO: toggle is_done from checkbox
 
   return (
     <div class="week-view">

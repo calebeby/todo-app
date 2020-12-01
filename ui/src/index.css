@@ -116,3 +116,27 @@ h3 {
 .task-popup header input {
   margin: 0;
 }
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 20rem;
+  margin: 0 auto;
+}
+
+.auth-form label {
+  display: grid;
+  grid-template-columns: auto 13rem;
+  margin: 0.7rem 0;
+}
+
+.auth-form button {
+  margin: 0.7rem 0;
+}
+
+.input-error {
+  background: rgba(255, 0, 0, 0.23);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0.2rem;
+}
