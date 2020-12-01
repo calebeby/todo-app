@@ -146,9 +146,9 @@ const main = async () => {
       const queryResult = await client.query(sql`
         SELECT title, description, due_date, is_done, id
         FROM "task"
-        WHERE task.due_date >= ${req.query.start} AND
-          task.due_date <= ${req.query.end} AND
-          task.user_id = ${req.userId}
+        WHERE task.due_date >= ${req.query.start}
+          AND task.due_date <= ${req.query.end}
+          AND task.user_id = ${req.userId}
       `)
       send(res, 200, queryResult.rows)
     } else {
@@ -156,8 +156,8 @@ const main = async () => {
       const queryResult = await client.query(sql`
         SELECT title, description, due_date, is_done, id
         FROM "task"
-        WHERE task.is_done = false AND
-          task.user_id = ${req.userId}
+        WHERE task.is_done = false
+          AND task.user_id = ${req.userId}
       `)
       send(res, 200, queryResult.rows)
     }
@@ -218,10 +218,10 @@ const main = async () => {
   app.get('/labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
-  SELECT *
-  FROM "label"
-  WHERE label.user_id = ${req.userId}
-  `)
+      SELECT *
+      FROM "label"
+      WHERE label.user_id = ${req.userId}
+    `)
 
     send(res, 200, queryResult.rows)
   })
@@ -230,10 +230,12 @@ const main = async () => {
   app.get('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
-  SELECT *
-  FROM "task_label","task"
-  WHERE ${req.params.id} = task_label.label_id AND task.id = task_label.task_id AND label.user_id = ${req.userId}
-  `)
+      SELECT *
+      FROM "task_label","task"
+      WHERE ${req.params.id} = task_label.label_id
+        AND task.id = task_label.task_id
+        AND label.user_id = ${req.userId}
+    `)
     if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
     else send(res, 200, queryResult.rows)
   })
@@ -242,10 +244,10 @@ const main = async () => {
   app.get('/column_labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
-  SELECT *
-  FROM "label"
-  WHERE label.is_column = true AND user_id = ${req.userId};
-  `)
+      SELECT *
+      FROM "label"
+      WHERE label.is_column = true AND user_id = ${req.userId};
+    `)
 
     send(res, 200, queryResult.rows)
   })

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'preact/hooks'
-import { makeRequest, updateTask } from './request'
+import { useCallback, useEffect, useState } from 'preact/hooks'
+import { makeRequest, parseDueDate, updateTask } from './request'
+import { useTaskChanges } from './state'
 import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
@@ -24,11 +25,17 @@ export const WeekView = () => {
       `/tasks/?start=${startDate.toUTCString()}&end=${endDate.toUTCString()}`,
     ).then((res) => {
       const tasks = res.data as (Task & { due_date: string })[]
-      setTasks(
-        tasks.map((task) => ({ ...task, due_date: new Date(task.due_date) })),
-      )
+      setTasks(tasks.map(parseDueDate))
     })
   }, [sunday])
+
+  useTaskChanges(
+    useCallback((updatedTask) => {
+      setTasks((oldTasks) => {
+        return oldTasks.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+      })
+    }, []),
+  )
 
   return (
     <div class="week-view">
