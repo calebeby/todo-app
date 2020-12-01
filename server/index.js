@@ -75,7 +75,6 @@ const main = async () => {
   })
 
   app.post('/tasks', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to create a task')
     const { title, description, due_date, is_done } = req.body
@@ -89,8 +88,8 @@ const main = async () => {
       return send(res, 400, 'task is_done is required and must be a boolean')
 
     const queryResult = await client.query(sql`
-      INSERT INTO task(title, description, due_date, is_done, user_id)
-      VALUES (${title}, ${description}, ${due_date}, ${is_done}, ${req.userId})
+      INSERT INTO task(title, description, due_date, is_done)
+      VALUES (${title}, ${description}, ${due_date}, ${is_done})
       RETURNING id
     `)
     const newId = queryResult.rows[0]?.id
@@ -103,7 +102,6 @@ const main = async () => {
   })
 
   app.put('/tasks/:id', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     if (typeof req.params.id !== 'string')
       return send(res, 400, 'task id required to update a task')
     const id = Number(req.params.id)
@@ -120,44 +118,37 @@ const main = async () => {
           is_done = COALESCE(${is_done}, is_done)
         WHERE
           id = ${id}
-          user_id = ${req.userId}
-        RETURNING title, description, due_date, is_done, id
+        RETURNING *
     `)
-    if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
     send(res, 200, queryResult.rows[0])
   })
 
   //retrieve task based on ID
   app.get('/tasks/:id', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
-      SELECT title, description, due_date, is_done, id
+      SELECT *
       FROM "task"
-      WHERE task.id = ${req.params.id} AND task.user_id = ${req.userId}
+      WHERE task.id = ${req.params.id}
     `)
-    if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
     send(res, 200, queryResult.rows[0])
   })
 
   app.get('/tasks', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
     if (req.query.start && req.query.end) {
       //Retrieve all tasks in a week based on the start and end date
       const queryResult = await client.query(sql`
-        SELECT title, description, due_date, is_done, id
+        SELECT *
         FROM "task"
         WHERE task.due_date >= ${req.query.start} AND
-          task.due_date <= ${req.query.end} AND
-          task.user_id = ${req.userId}
+        task.due_date <= ${req.query.end}
       `)
       send(res, 200, queryResult.rows)
     } else {
       //retrieve all not done tasks
       const queryResult = await client.query(sql`
-        SELECT title, description, due_date, is_done, id
+        SELECT *
         FROM "task"
-        WHERE task.is_done = false AND
-          task.user_id = ${req.userId}
+        WHERE task.is_done = false
       `)
       send(res, 200, queryResult.rows)
     }
