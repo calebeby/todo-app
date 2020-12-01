@@ -124,7 +124,7 @@ const main = async () => {
         RETURNING title, description, due_date, is_done, id
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
-    else send(res, 200, queryResult.rows[0])
+    send(res, 200, queryResult.rows[0])
   })
 
   //retrieve task based on ID
@@ -136,7 +136,7 @@ const main = async () => {
       WHERE task.id = ${req.params.id} AND task.user_id = ${req.userId}
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
-    else send(res, 200, queryResult.rows[0])
+    send(res, 200, queryResult.rows[0])
   })
 
   app.get('/tasks', async (req, res) => {
