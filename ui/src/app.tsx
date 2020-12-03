@@ -8,9 +8,15 @@ interface Route {
   stack?: boolean
 }
 
+/** List of all the URL's in the application and which components to load for each one */
 const routes: Route[] = [
   { path: '/', component: () => import('./week-view').then((m) => m.WeekView) },
   { path: '/monthview', component: () => import('./month-view').then((m) => m.MonthView) },
+  { path: '/login', component: () => import('./login').then((m) => m.Login) },
+  {
+    path: '/signup',
+    component: () => import('./signup').then((m) => m.Signup),
+  },
   {
     path: '/tasks/:taskId',
     component: () => import('./task-view').then((m) => m.TaskView),

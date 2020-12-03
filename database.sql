@@ -6,7 +6,7 @@ CREATE TABLE public.task
     due_date timestamp with time zone,
     is_done boolean NOT NULL,
     user_id integer NOT NULL references "user"(id)
-)
+);
 
 CREATE TABLE public."user"
 (
@@ -14,8 +14,9 @@ CREATE TABLE public."user"
     first_name text NOT NULL,
     last_name text NOT NULL,
     username text NOT NULL UNIQUE,
-    password_hash text NOT NULL,
-)
+    password_hash text NOT NULL
+);
+
 CREATE TABLE public.label
 (
     id SERIAL PRIMARY KEY,
@@ -23,10 +24,11 @@ CREATE TABLE public.label
     color text NOT NULL,
     is_column boolean NOT NULL,
     user_id integer NOT NULL references "user"(id)
-)
+);
+
 CREATE TABLE public.task_label
 (
     label_id integer NOT NULL references task(id),
     task_id integer NOT NULL references label(id),
     PRIMARY KEY (label_id, task_id)
-)
+);

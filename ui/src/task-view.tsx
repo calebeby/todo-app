@@ -1,18 +1,27 @@
-import { useEffect, useState } from 'preact/hooks'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 import { route } from './app'
-import { updateTask } from './request'
+import { makeRequest, updateTask } from './request'
+import { useTaskChanges } from './state'
 import { Task } from './task'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
   const [isEditingTitle, setEditingTitle] = useState(false)
   useEffect(() => {
-    fetch(`http://localhost:5000/tasks/${taskId}`)
-      .then((res) => res.json())
-      .then((task: Task & { due_date: string }) => {
-        setTask({ ...task, due_date: new Date(task.due_date) })
-      })
+    makeRequest(`/tasks/${taskId}`).then((response) => {
+      const task = response.data as Task & { due_date: string }
+      setTask({ ...task, due_date: new Date(task.due_date) })
+    })
   }, [taskId])
+
+  useTaskChanges(
+    useCallback(
+      (task) => {
+        if (task.id === Number(taskId)) setTask(task)
+      },
+      [taskId],
+    ),
+  )
 
   const dueDate =
     task?.due_date &&
@@ -20,11 +29,11 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
       '-' +
       String(task.due_date.getMonth() + 1).padStart(2, '0') +
       '-' +
-      task.due_date.getDate() +
+      String(task.due_date.getDate()).padStart(2, '0') +
       'T' +
       String(task.due_date.getHours()).padStart(2, '0') +
       ':' +
-      String(task.due_date.getSeconds()).padStart(2, '0')
+      String(task.due_date.getMinutes()).padStart(2, '0')
 
   const close = () => route('/')
 
@@ -92,5 +101,3 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
     </div>
   )
 }
-
-
