@@ -59,3 +59,12 @@ export const updateTask = async (
   })
   if (res.ok) fireTaskChange(parseDueDate(res.data))
 }
+
+export const createTask = async (task: Task) => {
+  const res = await makeRequest('/tasks', {
+    body: JSON.stringify(task),
+    method: 'POST',
+  })
+  if (res.ok) fireTaskChange({ ...task, id: res.data.id })
+  return res.data.id as number
+}

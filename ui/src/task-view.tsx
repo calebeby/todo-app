@@ -3,6 +3,7 @@ import { route } from './app'
 import { makeRequest, updateTask } from './request'
 import { useTaskChanges } from './state'
 import { Task } from './task'
+import { Popup } from './popup'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
@@ -38,15 +39,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const close = () => route('/')
 
   return (
-    <div
-      class="task-view"
-      onClick={(event) => {
-        const clickedOnThisElement = (event.target as HTMLElement).classList.contains(
-          'task-view',
-        )
-        if (clickedOnThisElement) close()
-      }}
-    >
+    <Popup close={close}>
       <div class="task-popup">
         <header>
           <input
@@ -98,6 +91,6 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
           {task?.description}
         </textarea>
       </div>
-    </div>
+    </Popup>
   )
 }

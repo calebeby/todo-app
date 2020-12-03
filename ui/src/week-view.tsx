@@ -1,22 +1,27 @@
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { makeRequest, parseDueDate, updateTask } from './request'
 import { useTaskChanges } from './state'
+import { createTaskPopup } from './create-task-popup'
 import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
 
-const now = new Date()
+const today = new Date()
+// reset it to start of day
+today.setHours(0, 0, 0, 0)
+
 export const WeekView = () => {
   const [sunday, setSunday] = useState(
-    now.getTime() - now.getDay() * lengthOfDay,
+    today.getTime() - today.getDay() * lengthOfDay,
   )
   const daysOfWeek = Array<Date>(7)
   for (let i = 0; i < 7; i++) {
     daysOfWeek[i] = new Date(sunday + i * lengthOfDay)
   }
   const startDate = daysOfWeek[0]
-  startDate.setHours(0, 0, 0, 0)
-  const endDate = daysOfWeek[daysOfWeek.length - 1]
+  // makes a copy of the date object to not modify the time of the original
+  const endDate = new Date(daysOfWeek[daysOfWeek.length - 1])
+  // Sets to end of day to include tasks happening during the last day of the week
   endDate.setHours(23, 59, 59, 999)
   const [tasks, setTasks] = useState<Task[]>([])
 
@@ -32,7 +37,16 @@ export const WeekView = () => {
   useTaskChanges(
     useCallback((updatedTask) => {
       setTasks((oldTasks) => {
-        return oldTasks.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+        let hasBeenFound = false
+        return oldTasks
+          .map((t) => {
+            if (t.id === updatedTask.id) {
+              hasBeenFound = true
+              return updatedTask
+            }
+            return t
+          })
+          .concat(hasBeenFound ? [] : [updatedTask])
       })
     }, []),
   )
@@ -116,18 +130,16 @@ export const WeekView = () => {
                     )
                   })}
               </ol>
+              <button
+                class="weekview-create-task"
+                onClick={() => createTaskPopup({ due_date: day })}
+              >
+                +
+              </button>
             </div>
           )
         })}
       </div>
     </div>
   )
-}
-
-declare global {
-  namespace Intl {
-    interface DateTimeFormatOptions {
-      dayPeriod?: string
-    }
-  }
 }
