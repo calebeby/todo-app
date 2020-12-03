@@ -116,3 +116,33 @@ h3 {
 .task-popup header input {
   margin: 0;
 }
+
+.month-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+  height: 100vh;
+}
+
+.month-view-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+
+}
+
+.month {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  
+}
+
+.monthday {
+  border: 1px solid rgb(177, 177, 177);
+  padding: 5px 5px;
+}
+.monthday-header {
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+}

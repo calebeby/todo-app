@@ -10,6 +10,7 @@ interface Route {
 
 const routes: Route[] = [
   { path: '/', component: () => import('./week-view').then((m) => m.WeekView) },
+  { path: '/monthview', component: () => import('./month-view').then((m) => m.MonthView) },
   {
     path: '/tasks/:taskId',
     component: () => import('./task-view').then((m) => m.TaskView),
