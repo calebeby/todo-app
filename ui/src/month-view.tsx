@@ -88,11 +88,9 @@ export const MonthView = () => {
           return (
             <div class="monthday">
               <div>
-
-              {day < firstDate
-                ? ' '
-                : day.toLocaleDateString('en-US', { day: 'numeric' })
-                }
+                {day < firstDate
+                  ? ' '
+                  : day.toLocaleDateString('en-US', { day: 'numeric' })}
               </div>
               <ol class="weekday-task-list">
                 {tasks
