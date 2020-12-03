@@ -35,7 +35,7 @@ export const MonthView = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   useEffect(() => {
     makeRequest(
-      `/tasks/?start=${firstDate.toUTCString()}&end=${lastDateOfMonth.toUTCString()}`,
+      `/tasks/?start=${new Date(startingSunday).toUTCString()}&end=${lastSaturday.toUTCString()}`,
     ).then((res) => {
       const tasks = res.data as (Task & { due_date: string })[]
       setTasks(tasks.map(parseDueDate))
