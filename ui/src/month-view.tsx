@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
-import { updateTask } from './request'
+import { makeRequest, parseDueDate, updateTask } from './request'
 import { Task } from './task'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const now = new Date()
@@ -18,30 +18,28 @@ export const MonthView = () => {
 
   const lastDateOfMonth = new Date(firstDateOfNextMonth.getTime() - lengthOfDay)
 
-  const daysOfMonth = Array<Date>(35)
-  for (let i = 0; i < firstDate.getDay(); i++) {
-    daysOfMonth[i] = new Date(startingSunday + i * lengthOfDay)
+  const lastSaturday = new Date(
+    lastDateOfMonth.getTime() + (6 - lastDateOfMonth.getDay()) * lengthOfDay,
+  )
+  let date = new Date(startingSunday)
+  const daysOfMonth = Array<Date>()
+  console.log(new Date(startingSunday), lastSaturday)
+  while (date.getTime() <= lastSaturday.getTime()) {
+    daysOfMonth.push(date)
+
+    date = new Date(date.getTime() + lengthOfDay)
   }
-  for (
-    let i = firstDate.getDay();
-    i < lastDateOfMonth.getDate() + firstDate.getDay();
-    i++
-  ) {
-    daysOfMonth[i] = new Date(first + (i - firstDate.getDay()) * lengthOfDay)
-  }
+
   firstDate.setHours(0, 0, 0, 0)
   lastDateOfMonth.setHours(23, 59, 59, 999)
   const [tasks, setTasks] = useState<Task[]>([])
   useEffect(() => {
-    fetch(
-      `http://localhost:5000/tasks/?start=${firstDate.toUTCString()}&end=${lastDateOfMonth.toUTCString()}`,
-    )
-      .then((res) => res.json())
-      .then((data: (Task & { due_date: string })[]) => {
-        setTasks(
-          data.map((task) => ({ ...task, due_date: new Date(task.due_date) })),
-        )
-      })
+    makeRequest(
+      `/tasks/?start=${firstDate.toUTCString()}&end=${lastDateOfMonth.toUTCString()}`,
+    ).then((res) => {
+      const tasks = res.data as (Task & { due_date: string })[]
+      setTasks(tasks.map(parseDueDate))
+    })
   }, [first])
 
   return (
@@ -87,11 +85,7 @@ export const MonthView = () => {
         {daysOfMonth.map((day) => {
           return (
             <div class="monthday">
-              <div>
-                {day < firstDate
-                  ? ' '
-                  : day.toLocaleDateString('en-US', { day: 'numeric' })}
-              </div>
+              <div>{day.toLocaleDateString('en-US', { day: 'numeric' })}</div>
               <ol class="weekday-task-list">
                 {tasks
                   .filter((task) => {
@@ -119,13 +113,13 @@ export const MonthView = () => {
                         />
                         <a href={`/tasks/${task.id}`}>
                           <span>{task.title}</span>
-                          <span>
+                          {/* <span>
                             {task.due_date.toLocaleTimeString('en-US', {
                               hour: 'numeric',
                               minute: 'numeric',
                               dayPeriod: 'short',
                             })}
-                          </span>
+                          </span> */}
                         </a>
                       </li>
                     )
