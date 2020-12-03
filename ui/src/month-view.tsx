@@ -11,7 +11,7 @@ export const MonthView = () => {
   const firstDate = new Date(first)
 
   const lastDateofLastMonth = new Date(firstDate.getTime() - lengthOfDay)
-  const startingSunday = first - firstDate.getDay() * lengthOfDay
+  const startingSundayTime = first - firstDate.getDay() * lengthOfDay
 
   const firstDateOfNextMonth = new Date(first)
   firstDateOfNextMonth.setMonth(firstDateOfNextMonth.getMonth() + 1)
@@ -21,21 +21,22 @@ export const MonthView = () => {
   const lastSaturday = new Date(
     lastDateOfMonth.getTime() + (6 - lastDateOfMonth.getDay()) * lengthOfDay,
   )
-  let date = new Date(startingSunday)
-  const daysOfMonth = Array<Date>()
-  console.log(new Date(startingSunday), lastSaturday)
+  const startingSunday = new Date(startingSundayTime)
+  let date = new Date(startingSundayTime)
+  const daysOfMonth:Date[] = []
+  console.log(new Date(startingSundayTime), lastSaturday)
   while (date.getTime() <= lastSaturday.getTime()) {
     daysOfMonth.push(date)
 
     date = new Date(date.getTime() + lengthOfDay)
   }
 
-  firstDate.setHours(0, 0, 0, 0)
-  lastDateOfMonth.setHours(23, 59, 59, 999)
+  startingSunday.setHours(0, 0, 0, 0)
+  lastSaturday.setHours(23, 59, 59, 999)
   const [tasks, setTasks] = useState<Task[]>([])
   useEffect(() => {
     makeRequest(
-      `/tasks/?start=${new Date(startingSunday).toUTCString()}&end=${lastSaturday.toUTCString()}`,
+      `/tasks/?start=${startingSunday.toUTCString()}&end=${lastSaturday.toUTCString()}`,
     ).then((res) => {
       const tasks = res.data as (Task & { due_date: string })[]
       setTasks(tasks.map(parseDueDate))
