@@ -10,3 +10,10 @@ declare namespace JSX {
     RefType extends EventTarget = EventTarget
   > = JSX.HTMLAttributes<RefType>
 }
+
+// For some reason the typescript types are missing the dayPeriod property, so this fills it in
+declare namespace Intl {
+  interface DateTimeFormatOptions {
+    dayPeriod?: string
+  }
+}

@@ -18,6 +18,10 @@ h3 {
   margin: 0;
 }
 
+button {
+  cursor: pointer;
+}
+
 .week-view {
   display: grid;
   grid-template-columns: 1fr;
@@ -81,7 +85,22 @@ h3 {
   justify-self: end;
 }
 
-.task-view {
+.weekview-create-task {
+  font-weight: bold;
+  width: 100%;
+  border-radius: 0.3rem;
+  background: rgba(67, 160, 71, 0.26);
+  padding: 0.5rem;
+  border: none;
+}
+
+.weekview-create-task:hover,
+.weekview-create-task:focus {
+  background: rgba(67, 160, 71, 0.86);
+  outline: none;
+}
+
+.popup-background {
   position: fixed;
   height: 100vh;
   top: 0;
@@ -93,16 +112,48 @@ h3 {
   align-items: center;
 }
 
+.popup-background > * {
+  background: white;
+  border-radius: 0.4rem;
+  box-shadow: 0 0 2rem rgba(50, 47, 47, 0.49);
+}
+
+.create-task-popup {
+  overflow: hidden;
+  display: flex;
+}
+
+.create-task-popup input {
+  font-size: 1.5rem;
+  outline: none;
+  border: none;
+  padding: 1rem;
+}
+
+.create-task-popup button {
+  background: #43a047;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  margin: 0.5rem;
+  margin-left: 0;
+}
+
+.create-task-popup button:hover,
+.create-task-popup button:focus {
+  background: #2e7d32;
+}
+
 .task-popup {
   width: 40em;
   height: 50em;
   max-width: calc(100vw - 10rem);
   max-height: calc(100vh - 10rem);
   background: white;
-  border-radius: 0.5em;
   display: grid;
-  padding: 1.5em;
-  grid-gap: 1.5em;
+  padding: 1.5rem;
+  grid-gap: 1.5rem;
   align-content: start;
 }
 
