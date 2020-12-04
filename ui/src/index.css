@@ -58,6 +58,11 @@ button {
   background-color: #2188f3;
 }
 
+.month-view .weekday-task {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.3rem;
+}
+
 .weekday-task a {
   color: white;
   text-decoration: none;
@@ -193,9 +198,27 @@ button {
   border: 1px solid rgb(177, 177, 177);
   padding: 5px 5px;
 }
+
+.monthday div {
+  display: flex;
+  justify-content: space-between;
+}
 .monthday-header {
   display:grid;
   grid-template-columns: repeat(7, 1fr);
+}
+
+.monthday-create-task{
+  font-weight: bold;
+  border-radius: 0.3rem;
+  background: rgba(67, 160, 71, 0.15);
+  padding: 0.2rem 0.3rem;
+  border: none;
+}
+.monthday-create-task:hover,
+.monthday-create-task:focus {
+  background: rgba(67, 160, 71, 0.60);
+  outline: none;
 }
 .auth-form {
   display: flex;
