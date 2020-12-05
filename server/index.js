@@ -240,6 +240,20 @@ const main = async () => {
     else send(res, 200, queryResult.rows)
   })
 
+  // Delete a specific label
+  app.delete('/labels/:id', async (req, res) => {
+    if (req.userId === undefined) return send(res, 401)
+    const queryResult = await client.query(sql`
+      DELETE
+      FROM label
+      WHERE ${req.params.id} = label.id
+        AND label.user_id = ${req.userId}
+    `)
+    if (queryResult.rowCount.length === 0)
+      send(res, 404, 'label does not exist')
+    else send(res, 200, queryResult.rows)
+  })
+
   //get all labels that are columns
   app.get('/column_labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)

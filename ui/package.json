@@ -8,6 +8,7 @@
     "type:watch": "tsc --watch"
   },
   "dependencies": {
+    "@mdi/js": "^5.8.55",
     "matchit": "^1.1.0",
     "preact": "^10.5.7"
   },

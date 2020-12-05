@@ -72,6 +72,6 @@ export const createTask = async (task: Task) => {
 
 export const getAllLabels = async () => {
   const res = await makeRequest('/labels')
-  if (res.ok) return res.data as Label[]
+  if (res.ok) return (res.data as Label[]).sort((a, b) => a.id - b.id)
   throw new Error(res.data)
 }
