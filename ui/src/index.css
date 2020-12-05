@@ -184,14 +184,12 @@ button {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-
 }
 
 .month {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-auto-rows: 1fr;
-  
 }
 
 .monthday {
@@ -204,11 +202,11 @@ button {
   justify-content: space-between;
 }
 .monthday-header {
-  display:grid;
+  display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 
-.monthday-create-task{
+.monthday-create-task {
   font-weight: bold;
   border-radius: 0.3rem;
   background: rgba(67, 160, 71, 0.15);
@@ -217,7 +215,7 @@ button {
 }
 .monthday-create-task:hover,
 .monthday-create-task:focus {
-  background: rgba(67, 160, 71, 0.60);
+  background: rgba(67, 160, 71, 0.6);
   outline: none;
 }
 .auth-form {
@@ -241,5 +239,21 @@ button {
   background: rgba(255, 0, 0, 0.23);
   padding: 1rem;
   margin: 1rem 0;
+  border-radius: 0.2rem;
+}
+
+.labels-popup {
+  padding: 2rem;
+  display: grid;
+  grid-gap: 0.1rem;
+}
+
+.labels-popup ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.labels-popup li {
   border-radius: 0.2rem;
 }

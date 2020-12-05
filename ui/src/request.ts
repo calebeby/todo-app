@@ -1,5 +1,6 @@
 import { fireTaskChange } from './state'
 import { Task } from './task'
+import { Label } from './label'
 
 let cachedToken: string | null = null
 
@@ -67,4 +68,10 @@ export const createTask = async (task: Task) => {
   })
   if (res.ok) fireTaskChange({ ...task, id: res.data.id })
   return res.data.id as number
+}
+
+export const getAllLabels = async () => {
+  const res = await makeRequest('/labels')
+  if (res.ok) return res.data as Label[]
+  throw new Error(res.data)
 }

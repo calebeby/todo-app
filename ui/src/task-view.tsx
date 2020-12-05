@@ -4,6 +4,7 @@ import { makeRequest, updateTask } from './request'
 import { useTaskChanges } from './state'
 import { Task } from './task'
 import { Popup } from './popup'
+import { showLabelsPopup } from './labels-popup'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
@@ -90,6 +91,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
         >
           {task?.description}
         </textarea>
+        <button onClick={showLabelsPopup}>Edit Labels</button>
       </div>
     </Popup>
   )
