@@ -251,6 +251,18 @@ const main = async () => {
     `)
     if (queryResult.rowCount.length === 0)
       send(res, 404, 'label does not exist')
+  })
+  //get all labels associated with a specific task id
+  app.get('/tasks/:id/labels', async (req, res) => {
+    if (req.userId === undefined) return send(res, 401)
+    const queryResult = await client.query(sql`
+      SELECT *
+      FROM "task_label","label"
+      WHERE ${req.params.id} = task_label.task_id
+        AND label.id = task_label.label_id
+        AND label.user_id = ${req.userId}
+    `)
+    if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
     else send(res, 200, queryResult.rows)
   })
 
