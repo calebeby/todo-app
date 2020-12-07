@@ -17,7 +17,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const [labelSearch, setLabelSearch] = useState<string>('')
   const refreshLabels = () => getAllLabels().then(setAllLabels)
   useEffect(() => {
-    getAllLabels().then(setAllLabels)
+    refreshLabels()
   }, [])
   useEffect(() => {
     makeRequest(`/tasks/${taskId}`).then((response) => {
@@ -132,15 +132,17 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                       setLabelSearch(e.currentTarget.value)
                     }}
                   />
-                  {allLabels.map((label) => {
-                    return label.name.includes(labelSearch) ? (
+                  {allLabels.filter((label) => {
+                    return (label.name.includes(labelSearch))
+                  })
+                  .map((label) => {
+                    return (
                       <button style={{ background: label.color }}>
                         {label.name}
                       </button>
-                    ) : (
-                      ' '
+                    
                     )
-                  })}
+                    })}
                 </>
               ) : (
                 ''
