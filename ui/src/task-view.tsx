@@ -133,7 +133,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                     }}
                   />
                   {allLabels.map((label) => {
-                    return label.name.startsWith(labelSearch) ? (
+                    return label.name.includes(labelSearch) ? (
                       <button style={{ background: label.color }}>
                         {label.name}
                       </button>
