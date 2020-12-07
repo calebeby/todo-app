@@ -288,6 +288,7 @@ button {
 }
 
 .editable-label div {
+  grid-column: 1 / -1;
   display: grid;
   grid-gap: 0.2rem;
 }

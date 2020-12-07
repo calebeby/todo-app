@@ -18,7 +18,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const refreshLabels = () => getAllLabels().then(setAllLabels)
   useEffect(() => {
     getAllLabels().then(setAllLabels)
-  })
+  }, [])
   useEffect(() => {
     makeRequest(`/tasks/${taskId}`).then((response) => {
       const task = response.data as Task & { due_date: string }

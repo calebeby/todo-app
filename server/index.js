@@ -262,8 +262,53 @@ const main = async () => {
         AND label.id = task_label.label_id
         AND label.user_id = ${req.userId}
     `)
-    if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
-    else send(res, 200, queryResult.rows)
+    send(res, 200, queryResult.rows)
+  })
+
+  // Updates the labels associated with a task to whatever you pass in
+  // Pass an array of integers (label ids) to associate with the task
+  app.put('/tasks/:id/labels', async (req, res) => {
+    if (req.userId === undefined) return send(res, 401)
+    if (
+      !Array.isArray(req.body) ||
+      !req.body.every((item) => typeof item === 'number')
+    )
+      return send(res, 400, 'request body must be an array of numbers')
+
+    const taskId = Number(req.params.id)
+    const labelIds = req.body
+
+    // Query: Remove any labels associated with that task that are not in the array of labels
+    // Makes sure that the user who makes the request owns the task and the label
+    // This query uses select(unnest(array)) instead of ANY(array)
+    // because ANY(array) wouldn't remove items when the array was empty
+    const deletePromise = client.query(sql`
+      DELETE FROM task_label
+      USING task, label
+      WHERE task_label.task_id = ${taskId}
+        AND task_label.task_id = task.id
+        AND task_label.label_id = label.id
+        AND task.user_id = ${req.userId}
+        AND label.user_id = ${req.userId}
+        AND label.id NOT IN (select(unnest(${labelIds}::int[])))
+    `)
+
+    // Query: Add labels associated with the task; any that are not already associated
+    // Makes sure that the user who makes the request owns the task and the label
+    const insertPromise = client.query(sql`
+      INSERT INTO task_label(task_id, label_id)
+      SELECT ${taskId}::int, label.id
+      FROM label, task
+      WHERE label.id = ANY(${labelIds}::int[])
+        AND task.id = ${taskId}
+        AND task.user_id = ${req.userId}
+        AND label.user_id = ${req.userId}
+      ON CONFLICT DO NOTHING
+    `)
+
+    await Promise.all([deletePromise, insertPromise])
+
+    send(res, 200)
   })
 
   //get all labels that are columns
