@@ -317,11 +317,26 @@ button {
 .box-of-labels>button {
   padding: .3rem;
   border-radius: .3rem;
-  background: rgba(67, 160, 71, 0.15);
+  background: rgba(67, 149, 160, 0.15);
   border: none;
 }
 .box-of-labels button:hover,
 .box-of-labels button:focus {
-  background: rgba(67, 160, 71, 0.6);
+  background: rgba(67, 149, 160, 0.6);
   outline: none;
+}
+
+.adding-labels input{
+  width: 100%;
+}
+
+.adding-labels button{
+  padding: .3rem;
+  border-radius: .3rem;
+  border: none;
+  margin: .1rem;
+}
+
+.edit-labels-button{
+  width: 100%;
 }

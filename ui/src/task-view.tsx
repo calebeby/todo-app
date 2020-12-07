@@ -14,8 +14,10 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const [allLabels, setAllLabels] = useState<Label[]>([])
   const [isEditingTitle, setEditingTitle] = useState(false)
   const [isEditingLabels, setEditingLabels] = useState(false)
+  const [labelSearch, setLabelSearch] = useState<string>('')
+  const refreshLabels = () => getAllLabels().then(setAllLabels)
   useEffect(() => {
-    getAllLabels().then(setAllLabels)
+    refreshLabels()
   }, [])
   useEffect(() => {
     makeRequest(`/tasks/${taskId}`).then((response) => {
@@ -108,9 +110,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
           </div>
           <div class="box-of-labels">
             {labels.map((label) => {
-              return (
-                <EditableLabel label = {label}/>
-              )
+              return <EditableLabel label={label} fireRefresh={refreshLabels} />
             })}
             <button
               onClick={() => {
@@ -119,18 +119,30 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
             >
               +
             </button>
-            <div>
+            <div class="adding-labels">
               {isEditingLabels ? (
                 <>
-                <button onClick={showLabelsPopup}>Edit Labels</button>
-                {allLabels.map((label) => {
-                  return(
-                    <button class="labels-in-box" style={{ background: label.color }}>
-                  {label.name}
-                </button>
-                  )
-                })}
-
+                  <button class="edit-labels-button" onClick={showLabelsPopup}>
+                    Edit Labels
+                  </button>
+                  <input
+                    type="text"
+                    placeholder="search for labels"
+                    onInput={(e) => {
+                      setLabelSearch(e.currentTarget.value)
+                    }}
+                  />
+                  {allLabels.filter((label) => {
+                    return (label.name.includes(labelSearch))
+                  })
+                  .map((label) => {
+                    return (
+                      <button style={{ background: label.color }}>
+                        {label.name}
+                      </button>
+                    
+                    )
+                    })}
                 </>
               ) : (
                 ''
