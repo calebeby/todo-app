@@ -15,7 +15,10 @@ const routes: Route[] = [
     path: '/monthview',
     component: () => import('./month-view').then((m) => m.MonthView),
   },
-  { path: '/login', component: () => import('./login').then((m) => m.Login) },
+  {
+    path: '/login',
+    component: () => import('./login').then((m) => m.Login),
+  },
   {
     path: '/signup',
     component: () => import('./signup').then((m) => m.Signup),

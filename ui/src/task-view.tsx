@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'preact/hooks'
-import { route } from './app'
+import { closePopup, route } from './app'
 import { getAllLabels, makeRequest, updateTask } from './request'
 import { useTaskChanges } from './state'
 import { Task } from './task'
@@ -77,7 +77,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
           ) : (
             <h1 onClick={() => setEditingTitle(true)}>{task?.title}</h1>
           )}
-          <button onClick={close}>Close</button>
+          <button onClick={closePopup}>Close</button>
         </header>
         <div class="task-body">
           <div class="task-attributes">
