@@ -7,7 +7,6 @@ import { getDaysOfMonth } from './utilities'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const now = new Date()
 
-//todo: clean up, syncing function, make tasks smaller
 export const MonthView = () => {
   const [first, setFirst] = useState(
     now.getTime() - lengthOfDay * (now.getDate() - 1),
@@ -55,26 +54,22 @@ export const MonthView = () => {
           })}
         </h1>
         <div>
-          {
-            <button
-              onClick={() => {
-                const firstOfMonth = new Date(first)
-                setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() - 1))
-              }}
-            >
-              previous
-            </button>
-          }
-          {
-            <button
-              onClick={() => {
-                const firstOfMonth = new Date(first)
-                setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() + 1))
-              }}
-            >
-              next
-            </button>
-          }
+          <button
+            onClick={() => {
+              const firstOfMonth = new Date(first)
+              setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() - 1))
+            }}
+          >
+            previous
+          </button>
+          <button
+            onClick={() => {
+              const firstOfMonth = new Date(first)
+              setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() + 1))
+            }}
+          >
+            next
+          </button>
         </div>
       </div>
       <div class="monthday-header">
@@ -87,54 +82,46 @@ export const MonthView = () => {
         <div>Saturday</div>
       </div>
       <div class="month">
-        {daysOfMonth.map((day) => {
-          return (
-            <div class="monthday">
-              <div>
-                {day.toLocaleDateString('en-US', { day: 'numeric' })}
-                <button
-                  class="monthday-create-task"
-                  onClick={() => createTaskPopup({ due_date: day })}
-                >
-                  +
-                </button>
-              </div>
-
-              <ol class="weekday-task-list">
-                {tasks
-                  .filter((task) => {
-                    return (
-                      task.due_date.getDate() === day.getDate() &&
-                      task.due_date.getMonth() === day.getMonth() &&
-                      task.due_date.getFullYear() === day.getFullYear()
-                    )
-                  })
-                  .sort(
-                    (a, b) =>
-                      // @ts-ignore
-                      a.due_date - b.due_date,
-                  )
-                  .map((task) => {
-                    return (
-                      <li class="weekday-task">
-                        <input
-                          type="checkbox"
-                          checked={task?.is_done}
-                          onChange={(e) => {
-                            const checked = e.currentTarget.checked
-                            updateTask({ is_done: checked }, task.id)
-                          }}
-                        />
-                        <a href={`/tasks/${task.id}`}>
-                          <span>{task.title}</span>
-                        </a>
-                      </li>
-                    )
-                  })}
-              </ol>
+        {daysOfMonth.map((day) => (
+          <div class="monthday">
+            <div>
+              {day.toLocaleDateString('en-US', { day: 'numeric' })}
+              <button
+                class="monthday-create-task"
+                onClick={() => createTaskPopup({ due_date: day })}
+              >
+                +
+              </button>
             </div>
-          )
-        })}
+
+            <ol class="weekday-task-list">
+              {tasks
+                .filter(
+                  (task) =>
+                    task.due_date.getDate() === day.getDate() &&
+                    task.due_date.getMonth() === day.getMonth() &&
+                    task.due_date.getFullYear() === day.getFullYear(),
+                )
+                // @ts-ignore
+                .sort((a, b) => a.due_date - b.due_date)
+                .map((task) => (
+                  <li class="weekday-task" key={task.id}>
+                    <input
+                      type="checkbox"
+                      checked={task?.is_done}
+                      onChange={(e) => {
+                        const checked = e.currentTarget.checked
+                        updateTask({ is_done: checked }, task.id)
+                      }}
+                    />
+                    <a href={`/tasks/${task.id}`}>
+                      <span>{task.title}</span>
+                    </a>
+                  </li>
+                ))}
+            </ol>
+          </div>
+        ))}
       </div>
     </div>
   )

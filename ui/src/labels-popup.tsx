@@ -58,5 +58,3 @@ const LabelsPopup = () => {
 export const showLabelsPopup = () => {
   createPopup(<LabelsPopup />)
 }
-
-

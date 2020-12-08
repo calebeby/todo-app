@@ -82,63 +82,53 @@ export const WeekView = () => {
         </div>
       </div>
       <div class="week">
-        {daysOfWeek.map((day) => {
-          return (
-            <div class="weekday">
-              <div class="weekday-header">
-                <div>
-                  {day.toLocaleDateString('en-US', { weekday: 'long' })}
-                </div>
-                <div>{day.toLocaleDateString('en-US', { day: 'numeric' })}</div>
-              </div>
-              <ol class="weekday-task-list">
-                {tasks
-                  .filter((task) => {
-                    return (
-                      task.due_date.getDate() === day.getDate() &&
-                      task.due_date.getMonth() === day.getMonth() &&
-                      task.due_date.getFullYear() === day.getFullYear()
-                    )
-                  })
-                  .sort(
-                    (a, b) =>
-                      // @ts-ignore
-                      a.due_date - b.due_date,
-                  )
-                  .map((task) => {
-                    return (
-                      <li class="weekday-task">
-                        <input
-                          type="checkbox"
-                          checked={task?.is_done}
-                          onChange={(e) => {
-                            const checked = e.currentTarget.checked
-                            updateTask({ is_done: checked }, task.id)
-                          }}
-                        />
-                        <a href={`/tasks/${task.id}`}>
-                          <span>{task.title}</span>
-                          <span>
-                            {task.due_date.toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: 'numeric',
-                              dayPeriod: 'short',
-                            })}
-                          </span>
-                        </a>
-                      </li>
-                    )
-                  })}
-              </ol>
-              <button
-                class="weekview-create-task"
-                onClick={() => createTaskPopup({ due_date: day })}
-              >
-                +
-              </button>
+        {daysOfWeek.map((day) => (
+          <div class="weekday">
+            <div class="weekday-header">
+              <div>{day.toLocaleDateString('en-US', { weekday: 'long' })}</div>
+              <div>{day.toLocaleDateString('en-US', { day: 'numeric' })}</div>
             </div>
-          )
-        })}
+            <ol class="weekday-task-list">
+              {tasks
+                .filter(
+                  (task) =>
+                    task.due_date.getDate() === day.getDate() &&
+                    task.due_date.getMonth() === day.getMonth() &&
+                    task.due_date.getFullYear() === day.getFullYear(),
+                )
+                // @ts-ignore
+                .sort((a, b) => a.due_date - b.due_date)
+                .map((task) => (
+                  <li class="weekday-task" key={task.id}>
+                    <input
+                      type="checkbox"
+                      checked={task?.is_done}
+                      onChange={(e) => {
+                        const checked = e.currentTarget.checked
+                        updateTask({ is_done: checked }, task.id)
+                      }}
+                    />
+                    <a href={`/tasks/${task.id}`}>
+                      <span>{task.title}</span>
+                      <span>
+                        {task.due_date.toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          dayPeriod: 'short',
+                        })}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+            </ol>
+            <button
+              class="weekview-create-task"
+              onClick={() => createTaskPopup({ due_date: day })}
+            >
+              +
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -296,27 +296,27 @@ button {
 .task-body {
   display: grid;
   grid-template-columns: 1fr 25%;
-  grid-gap: .4em;
+  grid-gap: 0.4em;
 }
 
-.task-attributes{
-  display:flex;
+.task-attributes {
+  display: flex;
   flex-direction: column;
 }
 
-.task-attributes input{
+.task-attributes input {
   margin: 0 0 3em 0;
 }
 
 .box-of-labels {
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  grid-gap: .2em 0;
+  grid-gap: 0.2em 0;
 }
-.box-of-labels>button {
-  padding: .3rem;
-  border-radius: .3rem;
+.box-of-labels > button {
+  padding: 0.3rem;
+  border-radius: 0.3rem;
   background: rgba(67, 149, 160, 0.15);
   border: none;
 }
@@ -326,17 +326,17 @@ button {
   outline: none;
 }
 
-.adding-labels input{
+.adding-labels input {
   width: 100%;
 }
 
-.adding-labels button{
-  padding: .3rem;
-  border-radius: .3rem;
+.adding-labels button {
+  padding: 0.3rem;
+  border-radius: 0.3rem;
   border: none;
-  margin: .1rem;
+  margin: 0.1rem;
 }
 
-.edit-labels-button{
+.edit-labels-button {
   width: 100%;
 }

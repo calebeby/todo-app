@@ -29,8 +29,13 @@ const routes: Route[] = [
 
 const parsedRoutes = routes.map((route) => parse(route.path))
 
+interface StackItem {
+  element: JSX.Element
+  url?: string
+}
+
 export const App = () => {
-  const [stack, setStack] = useState<JSX.Element[]>(componentStack)
+  const [stack, setStack] = useState<StackItem[]>(componentStack)
 
   // Subscribes to changes to the component stack
   useEffect(() => {
@@ -38,14 +43,14 @@ export const App = () => {
     return () => componentStackListeners.delete(setStack)
   }, [])
 
-  return stack
+  return stack.map((s) => s.element)
 }
 
 /**
  * Holds the components currently being rendered.
  * It is a stack so that multiple components can be displayed, for example for popups
  */
-let componentStack: JSX.Element[] = []
+let componentStack: StackItem[] = []
 const componentStackListeners = new Set<
   (stack: typeof componentStack) => void
 >()
@@ -56,12 +61,19 @@ const setComponentStack = (newStack: typeof componentStack) => {
 
 /** Adds a popup to the component stack */
 export const createPopup = (popup: JSX.Element) => {
-  setComponentStack([...componentStack, popup])
+  setComponentStack([...componentStack, { element: popup }])
 }
 
 /** Removes the component on the end of the component stack (meant for hiding popups) */
 export const closePopup = () => {
-  setComponentStack(componentStack.slice(0, -1))
+  const topOfStack = componentStack[componentStack.length - 1]
+  if (topOfStack.url !== undefined) {
+    // if the popup has a url, then go back so the url changes to the previous page
+    // This will fire the popstate listener which will handle removing the component
+    history.back()
+  } else {
+    setComponentStack(componentStack.slice(0, -1))
+  }
 }
 
 /**
@@ -72,19 +84,18 @@ const handleUrlChange = () => {
   const url = location.pathname
   const urlWithoutQuery = url.split('?')[0]
   const matched = match(urlWithoutQuery, parsedRoutes)
-  if (matched.length === 0) return setComponentStack([<h1>404</h1>])
+  if (matched.length === 0)
+    return setComponentStack([{ element: <h1>404</h1> }])
   const props = exec(urlWithoutQuery, matched)
   const route = routes[parsedRoutes.indexOf(matched)]
   route.component().then((Component) => {
     // skip update if URL has changed while component was being loaded
     if (url !== location.pathname) return
-    const newRouteComponent = <Component {...props} />
+    const stackItem: StackItem = { url, element: <Component {...props} /> }
     // If the route has the stack attribute, add it on top of previous components
     // Otherwise, un-render previous components
     setComponentStack(
-      route.stack
-        ? [...componentStack, newRouteComponent]
-        : [newRouteComponent],
+      route.stack ? [...componentStack, stackItem] : [stackItem],
     )
   })
 }

@@ -51,10 +51,8 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
       ':' +
       String(task.due_date.getMinutes()).padStart(2, '0')
 
-  const close = () => route('/')
-
   return (
-    <Popup close={close}>
+    <Popup>
       <div class="task-popup">
         <header>
           <input
@@ -74,18 +72,10 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                 const value = e.currentTarget.value
                 updateTask({ title: value }, taskId)
               }}
-              onBlur={() => {
-                setEditingTitle(false)
-              }}
+              onBlur={() => setEditingTitle(false)}
             />
           ) : (
-            <h1
-              onClick={() => {
-                setEditingTitle(true)
-              }}
-            >
-              {task?.title}
-            </h1>
+            <h1 onClick={() => setEditingTitle(true)}>{task?.title}</h1>
           )}
           <button onClick={close}>Close</button>
         </header>
@@ -110,17 +100,19 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
           </div>
           <div class="box-of-labels">
             {labels.map((label) => {
-              return <EditableLabel label={label} fireRefresh={refreshLabels} />
+              return (
+                <EditableLabel
+                  label={label}
+                  fireRefresh={refreshLabels}
+                  key={label.id}
+                />
+              )
             })}
-            <button
-              onClick={() => {
-                setEditingLabels(!isEditingLabels)
-              }}
-            >
+            <button onClick={() => setEditingLabels(!isEditingLabels)}>
               +
             </button>
             <div class="adding-labels">
-              {isEditingLabels ? (
+              {isEditingLabels && (
                 <>
                   <button class="edit-labels-button" onClick={showLabelsPopup}>
                     Edit Labels
@@ -132,20 +124,17 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                       setLabelSearch(e.currentTarget.value)
                     }}
                   />
-                  {allLabels.filter((label) => {
-                    return (label.name.includes(labelSearch))
-                  })
-                  .map((label) => {
-                    return (
-                      <button style={{ background: label.color }}>
+                  {allLabels
+                    .filter((label) => label.name.includes(labelSearch))
+                    .map((label) => (
+                      <button
+                        style={{ background: label.color }}
+                        key={label.id}
+                      >
                         {label.name}
                       </button>
-                    
-                    )
-                    })}
+                    ))}
                 </>
-              ) : (
-                ''
               )}
             </div>
           </div>
