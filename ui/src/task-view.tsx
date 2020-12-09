@@ -19,7 +19,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const [isEditingLabels, setEditingLabels] = useState(false)
   const [labelSearch, setLabelSearch] = useState<string>('')
   const refreshLabels = () => getAllLabels().then(setAllLabels)
-  const addLabelToTask = (labelIds: number[]) => {
+  const setTaskLabels = (labelIds: number[]) => {
     makeRequest(`/tasks/${taskId}/labels`, {
       method: 'PUT',
       body: JSON.stringify(labelIds),
@@ -121,7 +121,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                         let updatedLabels = labels.filter(
                           (goodLabel) => goodLabel.id !== label.id,
                         )
-                        addLabelToTask(updatedLabels.map((label) => label.id))
+                        setTaskLabels(updatedLabels.map((label) => label.id))
                         setLabels(updatedLabels)
                       }}
                     >
@@ -154,27 +154,23 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                         labels.every((l) => l.id !== label.id),
                     )
                     .map((label) => (
-                      <>
-                        <button
-                          style={{
-                            background: label.color,
-                            color:
-                              getColorBrightness(label.color) > 120
-                                ? 'black'
-                                : 'white',
-                          }}
-                          key={label.id}
-                          onClick={() => {
-                            let updatedLabels = [...labels, label]
-                            addLabelToTask(
-                              updatedLabels.map((label) => label.id),
-                            )
-                            setLabels(updatedLabels)
-                          }}
-                        >
-                          {label.name}
-                        </button>
-                      </>
+                      <button
+                        style={{
+                          background: label.color,
+                          color:
+                            getColorBrightness(label.color) > 120
+                              ? 'black'
+                              : 'white',
+                        }}
+                        key={label.id}
+                        onClick={() => {
+                          let updatedLabels = [...labels, label]
+                          setTaskLabels(updatedLabels.map((label) => label.id))
+                          setLabels(updatedLabels)
+                        }}
+                      >
+                        {label.name}
+                      </button>
                     ))}
                 </>
               )}
