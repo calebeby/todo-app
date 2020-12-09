@@ -3,12 +3,15 @@ import { useState } from 'preact/hooks'
 import { Label } from './label'
 import { makeRequest } from './request'
 import { Icon } from './icon'
+import { getColorBrightness } from './utilities'
 export const EditableLabel = ({
   label: originalLabel,
   fireRefresh,
+  additionalIcons
 }: {
   label: Label
   fireRefresh: () => void
+  additionalIcons?: JSX.Element|JSX.Element[]
 }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [label, setLabel] = useState(originalLabel)
@@ -47,6 +50,7 @@ export const EditableLabel = ({
       >
         <Icon icon={isEditing ? mdiCheck : mdiPencil} />
       </button>
+      {additionalIcons}
       {isEditing && (
         <div>
           <input
@@ -82,16 +86,4 @@ export const EditableLabel = ({
   )
 }
 
-/**
- * Returns the brightness of a color
- * https://stackoverflow.com/a/12043228
- */
-const getColorBrightness = (hexColor: string) => {
-  const c = hexColor.substring(1) // strip #
-  const rgb = parseInt(c, 16) // convert rrggbb to decimal
-  const r = (rgb >> 16) & 0xff // extract red
-  const g = (rgb >> 8) & 0xff // extract green
-  const b = (rgb >> 0) & 0xff // extract blue
 
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b // per ITU-R BT.709
-}

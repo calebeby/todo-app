@@ -308,7 +308,7 @@ const main = async () => {
 
     await Promise.all([deletePromise, insertPromise])
 
-    send(res, 200)
+    send(res, 200, {})
   })
 
   //get all labels that are columns
