@@ -7,6 +7,9 @@ import { Popup } from './popup'
 import { showLabelsPopup } from './labels-popup'
 import { Label } from './label'
 import { EditableLabel } from './editable-label'
+import { Icon } from './icon'
+import { mdiClose } from '@mdi/js'
+import { getColorBrightness } from './utilities'
 
 export const TaskView = ({ taskId }: { taskId: string }) => {
   const [task, setTask] = useState<Task | null>(null)
@@ -16,6 +19,13 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
   const [isEditingLabels, setEditingLabels] = useState(false)
   const [labelSearch, setLabelSearch] = useState<string>('')
   const refreshLabels = () => getAllLabels().then(setAllLabels)
+  const addLabelToTask = (labelIds: number[]) => {
+    makeRequest(`/tasks/${taskId}/labels`, {
+      method: 'PUT',
+      body: JSON.stringify(labelIds),
+    })
+  }
+
   useEffect(() => {
     refreshLabels()
   }, [])
@@ -105,6 +115,19 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                   label={label}
                   fireRefresh={refreshLabels}
                   key={label.id}
+                  additionalIcons={
+                    <button
+                      onClick={() => {
+                        let updatedLabels = labels.filter(
+                          (goodLabel) => goodLabel.id !== label.id,
+                        )
+                        addLabelToTask(updatedLabels.map((label) => label.id))
+                        setLabels(updatedLabels)
+                      }}
+                    >
+                      <Icon icon={mdiClose} />
+                    </button>
+                  }
                 />
               )
             })}
@@ -125,14 +148,33 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                     }}
                   />
                   {allLabels
-                    .filter((label) => label.name.includes(labelSearch))
+                    .filter(
+                      (label) =>
+                        label.name.includes(labelSearch) &&
+                        labels.every((l) => l.id !== label.id),
+                    )
                     .map((label) => (
-                      <button
-                        style={{ background: label.color }}
-                        key={label.id}
-                      >
-                        {label.name}
-                      </button>
+                      <>
+                        <button
+                          style={{
+                            background: label.color,
+                            color:
+                              getColorBrightness(label.color) > 120
+                                ? 'black'
+                                : 'white',
+                          }}
+                          key={label.id}
+                          onClick={() => {
+                            let updatedLabels = [...labels, label]
+                            addLabelToTask(
+                              updatedLabels.map((label) => label.id),
+                            )
+                            setLabels(updatedLabels)
+                          }}
+                        >
+                          {label.name}
+                        </button>
+                      </>
                     ))}
                 </>
               )}
