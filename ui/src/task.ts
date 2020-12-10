@@ -5,3 +5,7 @@ export interface Task {
   due_date: Date
   is_done: boolean
 }
+
+export interface TaskWithLabels extends Task {
+  labels: number[]
+}

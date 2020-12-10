@@ -7,11 +7,11 @@ import { getColorBrightness } from './utilities'
 export const EditableLabel = ({
   label: originalLabel,
   fireRefresh,
-  additionalIcons
+  additionalIcons,
 }: {
   label: Label
   fireRefresh: () => void
-  additionalIcons?: JSX.Element|JSX.Element[]
+  additionalIcons?: JSX.Element | JSX.Element[]
 }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [label, setLabel] = useState(originalLabel)
@@ -85,5 +85,3 @@ export const EditableLabel = ({
     </li>
   )
 }
-
-

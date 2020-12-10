@@ -108,7 +108,7 @@ export const MonthView = () => {
                   <li class="weekday-task" key={task.id}>
                     <input
                       type="checkbox"
-                      checked={task?.is_done}
+                      checked={task.is_done}
                       onChange={(e) => {
                         const checked = e.currentTarget.checked
                         updateTask({ is_done: checked }, task.id)

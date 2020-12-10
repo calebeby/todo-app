@@ -45,7 +45,9 @@ export const makeRequest = async (url: string, options: RequestInit = {}) => {
   return { ok: res.ok, data: await (res.ok ? res.json() : res.text()) }
 }
 
-export const parseDueDate = (task: Task & { due_date: string }) => ({
+export const parseDueDate = <T extends Task & { due_date: string }>(
+  task: T,
+) => ({
   ...task,
   due_date: new Date(task.due_date),
 })

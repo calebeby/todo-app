@@ -340,3 +340,35 @@ button {
 .edit-labels-button {
   width: 100%;
 }
+
+.list-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+.list-view-lists {
+  display: grid;
+  grid-auto-columns: minmax(15rem, 20rem);
+  grid-auto-flow: column;
+  grid-gap: 1rem;
+  padding: 1rem;
+}
+
+.list-view-list {
+  background: rgba(0, 0, 0, 0.21);
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+}
+
+.list-view-list h2 {
+  padding: 0.3rem;
+  border-radius: 0.3rem;
+  background: white;
+}
+
+.list-view-list ul {
+  padding: 0;
+  margin: 0;
+}

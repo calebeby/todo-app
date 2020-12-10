@@ -16,6 +16,10 @@ const routes: Route[] = [
     component: () => import('./month-view').then((m) => m.MonthView),
   },
   {
+    path: '/listview',
+    component: () => import('./list-view').then((m) => m.ListView),
+  },
+  {
     path: '/login',
     component: () => import('./login').then((m) => m.Login),
   },

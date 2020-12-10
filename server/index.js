@@ -1,6 +1,6 @@
 import pg from 'pg'
 import polka from 'polka'
-import { sql } from 'sqliterally'
+import { sql, query } from 'sqliterally'
 import * as dotenv from 'dotenv'
 import { json } from 'body-parser'
 import send from '@polka/send-type'
@@ -127,12 +127,17 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
-  //retrieve task based on ID
+  // retrieve task based on ID, with its labels
   app.get('/tasks/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
-      SELECT title, description, due_date, is_done, id
-      FROM "task"
+      SELECT title, description, due_date, is_done, id,
+        array(
+          SELECT task_label.label_id
+          FROM task_label
+          WHERE task_label.task_id = task.id
+        ) as labels
+      FROM task
       WHERE task.id = ${req.params.id} AND task.user_id = ${req.userId}
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
@@ -141,26 +146,20 @@ const main = async () => {
 
   app.get('/tasks', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
-    if (req.query.start && req.query.end) {
-      //Retrieve all tasks in a week based on the start and end date
-      const queryResult = await client.query(sql`
-        SELECT title, description, due_date, is_done, id
-        FROM "task"
-        WHERE task.due_date >= ${req.query.start}
-          AND task.due_date <= ${req.query.end}
-          AND task.user_id = ${req.userId}
-      `)
-      send(res, 200, queryResult.rows)
-    } else {
-      //retrieve all not done tasks
-      const queryResult = await client.query(sql`
-        SELECT title, description, due_date, is_done, id
-        FROM "task"
-        WHERE task.is_done = false
-          AND task.user_id = ${req.userId}
-      `)
-      send(res, 200, queryResult.rows)
-    }
+    let q = query.select`title, description, due_date, is_done, id,
+      array(
+        SELECT task_label.label_id
+        FROM task_label
+        WHERE task_label.task_id = task.id
+      ) as labels
+    `.from`task`.where`task.user_id = ${req.userId}`
+    if (req.query.start) q = q.where`task.due_date >= ${req.query.start}`
+    if (req.query.end) q = q.where`task.due_date <= ${req.query.end}`
+    if (req.query.is_done) q = q.where`task.is_done = ${req.query.is_done}`
+
+    const queryResult = await client.query(q.build())
+
+    send(res, 200, queryResult.rows)
   })
 
   //label///////////////////////////////////
@@ -252,12 +251,13 @@ const main = async () => {
     if (queryResult.rowCount.length === 0)
       send(res, 404, 'label does not exist')
   })
-  //get all labels associated with a specific task id
+  // get all labels associated with a specific task id
+  // TODO: remove
   app.get('/tasks/:id/labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
       SELECT *
-      FROM "task_label","label"
+      FROM task_label, label
       WHERE ${req.params.id} = task_label.task_id
         AND label.id = task_label.label_id
         AND label.user_id = ${req.userId}
@@ -311,7 +311,7 @@ const main = async () => {
     send(res, 200, {})
   })
 
-  //get all labels that are columns
+  // get all labels that are columns
   app.get('/column_labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
