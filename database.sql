@@ -28,7 +28,7 @@ CREATE TABLE public.label
 
 CREATE TABLE public.task_label
 (
-    label_id integer NOT NULL references label(id),
-    task_id integer NOT NULL references task(id),
+    label_id integer NOT NULL references label(id) ON DELETE CASCADE,
+    task_id integer NOT NULL references task(id) ON DELETE CASCADE,
     PRIMARY KEY (label_id, task_id)
 );

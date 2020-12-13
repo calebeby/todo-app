@@ -149,6 +149,19 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
+  // delete task based on ID
+  app.delete('/tasks/:id', async (req, res) => {
+    if (req.userId === undefined) return send(res, 401)
+    const queryResult = await client.query(sql`
+      DELETE
+      FROM task
+      WHERE ${req.params.id} = task.id
+        AND task.user_id = ${req.userId}
+    `)
+    if (queryResult.rowCount === 0) send(res, 404, 'task does not exist')
+    else send(res, 200, {})
+  })
+
   app.get('/tasks', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     let q = query.select`title, description, due_date, is_done, id,
@@ -253,21 +266,8 @@ const main = async () => {
       WHERE ${req.params.id} = label.id
         AND label.user_id = ${req.userId}
     `)
-    if (queryResult.rowCount.length === 0)
-      send(res, 404, 'label does not exist')
-  })
-  // get all labels associated with a specific task id
-  // TODO: remove
-  app.get('/tasks/:id/labels', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
-    const queryResult = await client.query(sql`
-      SELECT *
-      FROM task_label, label
-      WHERE ${req.params.id} = task_label.task_id
-        AND label.id = task_label.label_id
-        AND label.user_id = ${req.userId}
-    `)
-    send(res, 200, queryResult.rows)
+    if (queryResult.rowCount === 0) send(res, 404, 'label does not exist')
+    send(res, 200, {})
   })
 
   // Updates the labels associated with a task to whatever you pass in

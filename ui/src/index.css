@@ -313,12 +313,9 @@ button {
 }
 
 .task-attributes {
-  display: flex;
-  flex-direction: column;
-}
-
-.task-attributes input {
-  margin: 0 0 3em 0;
+  display: grid;
+  grid-gap: 1rem;
+  align-content: start;
 }
 
 .box-of-labels {
@@ -328,7 +325,7 @@ button {
   grid-gap: 0.2em 0;
 }
 .box-of-labels > button {
-  padding: 0.3rem;
+  padding: 0.4rem;
   border-radius: 0.3rem;
   background: rgba(67, 149, 160, 0.15);
   border: none;
@@ -352,6 +349,18 @@ button {
 
 .edit-labels-button {
   width: 100%;
+}
+
+.delete-task {
+  background: rgba(255, 122, 122, 0.6);
+  border: none;
+  border-radius: 0.3rem;
+  padding: 0.4rem;
+}
+
+.task-right-column {
+  display: grid;
+  grid-gap: 0.5rem;
 }
 
 .list-view {

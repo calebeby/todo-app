@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks'
 import { closePopup } from './app'
 import { getAllLabels } from './request'
-import { setTaskLabels, updateTask, useTask } from './state'
+import { deleteTask, setTaskLabels, updateTask, useTask } from './state'
 import { Popup } from './popup'
 import { showLabelsPopup } from './labels-popup'
 import { Label } from './label'
@@ -82,36 +82,36 @@ export const TaskView = ({ taskId: taskIdString }: { taskId: string }) => {
               {task?.description}
             </textarea>
           </div>
-          <div class="box-of-labels">
-            {task?.labels.map((labelId) => {
-              const label = allLabels.find((l) => l.id === labelId)
-              if (!label) return
-              return (
-                <EditableLabel
-                  label={label}
-                  fireRefresh={refreshLabels}
-                  key={label.id}
-                  additionalIcons={
-                    <button
-                      onClick={() => {
-                        let updatedLabels = task.labels.filter(
-                          (labelId) => labelId !== label.id,
-                        )
-                        setTaskLabels(taskId, updatedLabels)
-                      }}
-                    >
-                      <Icon icon={mdiClose} />
-                    </button>
-                  }
-                />
-              )
-            })}
-            <button onClick={() => setEditingLabels(!isEditingLabels)}>
-              +
-            </button>
-            <div class="adding-labels">
+          <div class="task-right-column">
+            <div class="box-of-labels">
+              {task?.labels.map((labelId) => {
+                const label = allLabels.find((l) => l.id === labelId)
+                if (!label) return
+                return (
+                  <EditableLabel
+                    label={label}
+                    fireRefresh={refreshLabels}
+                    key={label.id}
+                    additionalIcons={
+                      <button
+                        onClick={() => {
+                          let updatedLabels = task.labels.filter(
+                            (labelId) => labelId !== label.id,
+                          )
+                          setTaskLabels(taskId, updatedLabels)
+                        }}
+                      >
+                        <Icon icon={mdiClose} />
+                      </button>
+                    }
+                  />
+                )
+              })}
+              <button onClick={() => setEditingLabels(!isEditingLabels)}>
+                +
+              </button>
               {isEditingLabels && (
-                <>
+                <div class="adding-labels">
                   <button class="edit-labels-button" onClick={showLabelsPopup}>
                     Edit Labels
                   </button>
@@ -149,9 +149,15 @@ export const TaskView = ({ taskId: taskIdString }: { taskId: string }) => {
                         {label.name}
                       </button>
                     ))}
-                </>
+                </div>
               )}
             </div>
+            <button
+              class="delete-task"
+              onClick={() => deleteTask(taskId).then(closePopup)}
+            >
+              Delete task
+            </button>
           </div>
         </div>
       </div>

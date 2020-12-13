@@ -49,6 +49,13 @@ export const createTask = async (task: Omit<Task, 'id'>) => {
   return res.data.id as number
 }
 
+export const deleteTask = async (taskId: number) => {
+  const res = await makeRequest(`/tasks/${taskId}`, { method: 'DELETE' })
+  const oldTask = allTasks.get(taskId) as TaskWithLabels
+  if (res.ok)
+    taskChangeListeners.forEach((listener) => listener(oldTask, undefined))
+}
+
 const allTasks = new Map<number, TaskWithLabels>()
 
 interface Constraints {
@@ -58,7 +65,10 @@ interface Constraints {
 }
 
 interface TaskListener {
-  (oldTask: TaskWithLabels | undefined, updatedTask: TaskWithLabels): void
+  (
+    oldTask: TaskWithLabels | undefined,
+    updatedTask: TaskWithLabels | undefined,
+  ): void
 }
 
 const taskChangeListeners = new Set<TaskListener>()
@@ -104,15 +114,14 @@ export const useTasks = (constraints: Constraints, deps: unknown[]) => {
 
       if (oldMatches && !updatedMatches) {
         // remove
-        setTasks((tasks) => tasks.filter((task) => task.id !== updatedTask.id))
+        setTasks((tasks) => tasks.filter((task) => task.id !== oldTask!.id))
       } else if (!oldMatches && updatedMatches) {
         //add
-        setTasks((tasks) => [...tasks, updatedTask])
+        setTasks((tasks) => [...tasks, updatedTask!])
       } else if (oldMatches && updatedMatches) {
         //update
         setTasks((tasks) =>
-          // @ts-expect-error
-          tasks.map((task) => (task.id === oldTask.id ? updatedTask : task)),
+          tasks.map((task) => (task.id === oldTask!.id ? updatedTask! : task)),
         )
       }
     }
