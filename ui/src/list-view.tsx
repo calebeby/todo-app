@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'preact/hooks'
+import { useSetLastView } from './home'
 import { Label } from './label'
 import { useRequireLogin } from './login'
 import { makeRequest } from './request'
@@ -11,6 +12,7 @@ type Column = Label & { is_column: true }
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
 
 export const ListView = () => {
+  useSetLastView('/list')
   useRequireLogin()
 
   const tasks = useTasks({ is_done: false }, [])

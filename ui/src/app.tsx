@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'preact/hooks'
+import { useLayoutEffect, useState } from 'preact/hooks'
 import { parse, match, exec } from 'matchit'
+import { Home } from './home'
 
 interface Route {
   path: string
@@ -10,13 +11,20 @@ interface Route {
 
 /** List of all the URL's in the application and which components to load for each one */
 const routes: Route[] = [
-  { path: '/', component: () => import('./week-view').then((m) => m.WeekView) },
   {
-    path: '/monthview',
+    path: '/',
+    component: () => Promise.resolve(Home),
+  },
+  {
+    path: '/week',
+    component: () => import('./week-view').then((m) => m.WeekView),
+  },
+  {
+    path: '/month',
     component: () => import('./month-view').then((m) => m.MonthView),
   },
   {
-    path: '/listview',
+    path: '/list',
     component: () => import('./list-view').then((m) => m.ListView),
   },
   {
@@ -45,7 +53,8 @@ export const App = () => {
   const [stack, setStack] = useState<StackItem[]>(componentStack)
 
   // Subscribes to changes to the component stack
-  useEffect(() => {
+  // useLayoutEffect is used instead of useEffect because otherwise the subscription is added too late and the home redirect doesn't work.
+  useLayoutEffect(() => {
     componentStackListeners.add(setStack)
     return () => componentStackListeners.delete(setStack)
   }, [])
