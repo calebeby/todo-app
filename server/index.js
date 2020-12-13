@@ -121,7 +121,12 @@ const main = async () => {
         WHERE
           id = ${id}
           AND user_id = ${req.userId}
-        RETURNING title, description, due_date, is_done, id
+        RETURNING title, description, due_date, is_done, id, 
+          array(
+            SELECT task_label.label_id
+            FROM task_label
+            WHERE task_label.task_id = task.id
+          ) as labels
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'task does not exist')
     else send(res, 200, queryResult.rows[0])

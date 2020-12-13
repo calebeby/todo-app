@@ -50,7 +50,7 @@ export const App = () => {
     return () => componentStackListeners.delete(setStack)
   }, [])
 
-  return stack.map((s) => s.element)
+  return <>{stack.map((s) => s.element)}</>
 }
 
 /**

@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useState } from 'preact/hooks'
+import { useState } from 'preact/hooks'
 import { createTaskPopup } from './create-task-popup'
-import { makeRequest, parseDueDate, updateTask } from './request'
-import { useTaskChanges } from './state'
-import { Task } from './task'
+import { updateTask, useTasks } from './state'
 import { getDaysOfMonth } from './utilities'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const now = new Date()
@@ -15,33 +13,13 @@ export const MonthView = () => {
 
   daysOfMonth[0].setHours(0, 0, 0, 0)
   daysOfMonth[daysOfMonth.length - 1].setHours(23, 59, 59, 999)
-  const [tasks, setTasks] = useState<Task[]>([])
-  useEffect(() => {
-    makeRequest(
-      `/tasks/?start=${daysOfMonth[0].toUTCString()}&end=${daysOfMonth[
-        daysOfMonth.length - 1
-      ].toUTCString()}`,
-    ).then((res) => {
-      const tasks = res.data as (Task & { due_date: string })[]
-      setTasks(tasks.map(parseDueDate))
-    })
-  }, [first])
 
-  useTaskChanges(
-    useCallback((updatedTask) => {
-      setTasks((oldTasks) => {
-        let hasBeenFound = false
-        return oldTasks
-          .map((t) => {
-            if (t.id === updatedTask.id) {
-              hasBeenFound = true
-              return updatedTask
-            }
-            return t
-          })
-          .concat(hasBeenFound ? [] : [updatedTask])
-      })
-    }, []),
+  const tasks = useTasks(
+    {
+      start: daysOfMonth[0],
+      end: daysOfMonth[daysOfMonth.length - 1],
+    },
+    [first],
   )
 
   return (

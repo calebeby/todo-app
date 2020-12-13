@@ -1,4 +1,3 @@
-import { fireTaskChange } from './state'
 import { Task } from './task'
 import { Label } from './label'
 
@@ -51,26 +50,6 @@ export const parseDueDate = <T extends Task & { due_date: string }>(
   ...task,
   due_date: new Date(task.due_date),
 })
-
-export const updateTask = async (
-  partialTask: Partial<Task>,
-  taskId: number | string,
-) => {
-  const res = await makeRequest(`/tasks/${taskId}`, {
-    body: JSON.stringify(partialTask),
-    method: 'PUT',
-  })
-  if (res.ok) fireTaskChange(parseDueDate(res.data))
-}
-
-export const createTask = async (task: Task) => {
-  const res = await makeRequest('/tasks', {
-    body: JSON.stringify(task),
-    method: 'POST',
-  })
-  if (res.ok) fireTaskChange({ ...task, id: res.data.id })
-  return res.data.id as number
-}
 
 export const getAllLabels = async () => {
   const res = await makeRequest('/labels')

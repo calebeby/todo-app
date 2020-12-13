@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from 'preact/hooks'
-import { closePopup, route } from './app'
-import { getAllLabels, makeRequest, updateTask } from './request'
-import { useTaskChanges } from './state'
-import { Task } from './task'
+import { useEffect, useState } from 'preact/hooks'
+import { closePopup } from './app'
+import { getAllLabels } from './request'
+import { setTaskLabels, updateTask, useTask } from './state'
 import { Popup } from './popup'
 import { showLabelsPopup } from './labels-popup'
 import { Label } from './label'
@@ -11,43 +10,18 @@ import { Icon } from './icon'
 import { mdiClose } from '@mdi/js'
 import { getColorBrightness } from './utilities'
 
-export const TaskView = ({ taskId }: { taskId: string }) => {
-  const [task, setTask] = useState<Task | null>(null)
-  const [labels, setLabels] = useState<Label[]>([])
+export const TaskView = ({ taskId: taskIdString }: { taskId: string }) => {
+  const taskId = Number(taskIdString)
+  const task = useTask(taskId)
   const [allLabels, setAllLabels] = useState<Label[]>([])
   const [isEditingTitle, setEditingTitle] = useState(false)
   const [isEditingLabels, setEditingLabels] = useState(false)
   const [labelSearch, setLabelSearch] = useState<string>('')
   const refreshLabels = () => getAllLabels().then(setAllLabels)
-  const setTaskLabels = (labelIds: number[]) => {
-    makeRequest(`/tasks/${taskId}/labels`, {
-      method: 'PUT',
-      body: JSON.stringify(labelIds),
-    })
-  }
 
   useEffect(() => {
     refreshLabels()
   }, [])
-  useEffect(() => {
-    makeRequest(`/tasks/${taskId}`).then((response) => {
-      const task = response.data as Task & { due_date: string }
-      setTask({ ...task, due_date: new Date(task.due_date) })
-    })
-    makeRequest(`/tasks/${taskId}/labels`).then((response) => {
-      const labels = response.data as Label[]
-      setLabels(labels)
-    })
-  }, [taskId])
-
-  useTaskChanges(
-    useCallback(
-      (task) => {
-        if (task.id === Number(taskId)) setTask(task)
-      },
-      [taskId],
-    ),
-  )
 
   const dueDate =
     task?.due_date &&
@@ -109,7 +83,9 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
             </textarea>
           </div>
           <div class="box-of-labels">
-            {labels.map((label) => {
+            {task?.labels.map((labelId) => {
+              const label = allLabels.find((l) => l.id === labelId)
+              if (!label) return
               return (
                 <EditableLabel
                   label={label}
@@ -118,11 +94,10 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                   additionalIcons={
                     <button
                       onClick={() => {
-                        let updatedLabels = labels.filter(
-                          (goodLabel) => goodLabel.id !== label.id,
+                        let updatedLabels = task.labels.filter(
+                          (labelId) => labelId !== label.id,
                         )
-                        setTaskLabels(updatedLabels.map((label) => label.id))
-                        setLabels(updatedLabels)
+                        setTaskLabels(taskId, updatedLabels)
                       }}
                     >
                       <Icon icon={mdiClose} />
@@ -151,7 +126,7 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                     .filter(
                       (label) =>
                         label.name.includes(labelSearch) &&
-                        labels.every((l) => l.id !== label.id),
+                        task?.labels.every((l) => l !== label.id),
                     )
                     .map((label) => (
                       <button
@@ -164,9 +139,11 @@ export const TaskView = ({ taskId }: { taskId: string }) => {
                         }}
                         key={label.id}
                         onClick={() => {
-                          let updatedLabels = [...labels, label]
-                          setTaskLabels(updatedLabels.map((label) => label.id))
-                          setLabels(updatedLabels)
+                          let updatedLabels = [
+                            ...(task?.labels || []),
+                            label.id,
+                          ]
+                          setTaskLabels(taskId, updatedLabels)
                         }}
                       >
                         {label.name}

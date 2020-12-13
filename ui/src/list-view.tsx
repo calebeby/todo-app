@@ -1,40 +1,17 @@
 import { useState, useEffect } from 'preact/hooks'
 import { Label } from './label'
-import { makeRequest, parseDueDate, updateTask } from './request'
-import { Task } from './task'
+import { makeRequest } from './request'
+import { updateTask, useTasks } from './state'
+import { TaskWithLabels } from './task'
 import { getColorBrightness } from './utilities'
 
 type Column = Label & { is_column: true }
-type TaskWithLabels = Task & { labels: number[] }
+
+const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
 
 export const ListView = () => {
-  const [tasks, setTasks] = useState<TaskWithLabels[]>([])
-  const [doneTasksInLastWeek, setDoneTasksInLastWeek] = useState<
-    TaskWithLabels[]
-  >([])
-
-  useEffect(() => {
-    makeRequest('/tasks?is_done=false').then((res) => {
-      const tasks = res.data as (Task & {
-        due_date: string
-        labels: number[]
-      })[]
-      setTasks(tasks.map(parseDueDate))
-    })
-  }, [])
-
-  useEffect(() => {
-    const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
-    makeRequest(`/tasks?is_done=true&start=${oneWeekAgo.toUTCString()}`).then(
-      (res) => {
-        const tasks = res.data as (Task & {
-          due_date: string
-          labels: number[]
-        })[]
-        setDoneTasksInLastWeek(tasks.map(parseDueDate))
-      },
-    )
-  }, [])
+  const tasks = useTasks({ is_done: false }, [])
+  const doneTasksInLastWeek = useTasks({ is_done: true, start: oneWeekAgo }, [])
 
   const [columns, setColumns] = useState<Column[]>([])
 

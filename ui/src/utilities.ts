@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'preact/hooks'
+
 const lengthOfDay = 24 * 60 * 60 * 1000
 
 export const getDaysOfMonth = (first: Date) => {
@@ -33,4 +35,18 @@ export const getColorBrightness = (hexColor: string) => {
   const b = (rgb >> 0) & 0xff // extract blue
 
   return 0.2126 * r + 0.7152 * g + 0.0722 * b // per ITU-R BT.709
+}
+
+/**
+ * Runs a function when the component unmounts.
+ * Avoids stale closures, always uses most up to date
+ */
+export const useUnmountEffect = (callback: () => void) => {
+  const callbackRef = useRef<typeof callback>(callback)
+  callbackRef.current = callback
+  useEffect(() => {
+    return () => {
+      if (callbackRef.current) callbackRef.current()
+    }
+  }, [])
 }

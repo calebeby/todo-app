@@ -1,9 +1,9 @@
 import { mdiCheck, mdiPencil, mdiTrashCan } from '@mdi/js'
-import { useState } from 'preact/hooks'
+import { useEffect, useRef, useState } from 'preact/hooks'
 import { Label } from './label'
 import { makeRequest } from './request'
 import { Icon } from './icon'
-import { getColorBrightness } from './utilities'
+import { getColorBrightness, useUnmountEffect } from './utilities'
 export const EditableLabel = ({
   label: originalLabel,
   fireRefresh,
@@ -21,6 +21,21 @@ export const EditableLabel = ({
       body: JSON.stringify(label),
     })
   }
+  const nameInputRef = useRef<HTMLInputElement>()
+
+  useEffect(() => {
+    if (isEditing) nameInputRef.current.focus()
+  }, [isEditing])
+
+  useUnmountEffect(() => {
+    if (isEditing) upload()
+  })
+
+  const stopEditing = () => {
+    setIsEditing(false)
+    upload()
+  }
+
   return (
     <li
       class="editable-label"
@@ -30,27 +45,34 @@ export const EditableLabel = ({
       }}
     >
       {isEditing ? (
-        <input
-          type="text"
-          value={label.name}
-          onChange={(e) => {
-            setLabel((l) => ({ ...l, name: e.currentTarget.value }))
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            stopEditing()
           }}
-        />
+        >
+          <input
+            type="text"
+            ref={nameInputRef}
+            value={label.name}
+            onChange={(e) => {
+              setLabel((l) => ({ ...l, name: e.currentTarget.value }))
+            }}
+          />
+        </form>
       ) : (
         label.name
       )}
-      <button
-        onClick={() =>
-          setIsEditing((wasEditing) => {
-            if (wasEditing) upload()
-            return !wasEditing
-          })
-        }
-      >
-        <Icon icon={isEditing ? mdiCheck : mdiPencil} />
-      </button>
-      {additionalIcons}
+      {isEditing ? (
+        <button onClick={stopEditing}>
+          <Icon icon={mdiCheck} />
+        </button>
+      ) : (
+        <button onClick={() => setIsEditing(true)}>
+          <Icon icon={mdiPencil} />
+        </button>
+      )}
+      {!isEditing && additionalIcons}
       {isEditing && (
         <div>
           <input
