@@ -23,7 +23,7 @@ app.use(json())
 app.use(cors({ origin: '*' }))
 
 const jwtPrefix = 'Bearer '
-const jwtExpiresIn = 30 * 60 // seconds
+const jwtExpiresIn = 7 * 24 * 60 * 60 // 7 days, base unit is seconds
 const saltRounds = 12
 
 /**

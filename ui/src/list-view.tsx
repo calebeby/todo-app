@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks'
 import { Label } from './label'
+import { useRequireLogin } from './login'
 import { makeRequest } from './request'
 import { updateTask, useTasks } from './state'
 import { TaskWithLabels } from './task'
@@ -10,6 +11,8 @@ type Column = Label & { is_column: true }
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
 
 export const ListView = () => {
+  useRequireLogin()
+
   const tasks = useTasks({ is_done: false }, [])
   const doneTasksInLastWeek = useTasks({ is_done: true, start: oneWeekAgo }, [])
 

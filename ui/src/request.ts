@@ -3,7 +3,7 @@ import { Label } from './label'
 
 let cachedToken: string | null = null
 
-const getToken = () => {
+export const getToken = () => {
   const token = cachedToken || (cachedToken = localStorage.getItem('jwt'))
   if (token === null) return null
   const { exp } = parseToken(token)

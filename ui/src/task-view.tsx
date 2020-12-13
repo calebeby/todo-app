@@ -9,8 +9,11 @@ import { EditableLabel } from './editable-label'
 import { Icon } from './icon'
 import { mdiClose } from '@mdi/js'
 import { getColorBrightness } from './utilities'
+import { useRequireLogin } from './login'
 
 export const TaskView = ({ taskId: taskIdString }: { taskId: string }) => {
+  useRequireLogin()
+
   const taskId = Number(taskIdString)
   const task = useTask(taskId)
   const [allLabels, setAllLabels] = useState<Label[]>([])

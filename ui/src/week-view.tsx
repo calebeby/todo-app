@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
 import { updateTask, useTasks } from './state'
 import { createTaskPopup } from './create-task-popup'
+import { useRequireLogin } from './login'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const lengthOfWeek = 7 * lengthOfDay
 
@@ -9,6 +10,8 @@ const today = new Date()
 today.setHours(0, 0, 0, 0)
 
 export const WeekView = () => {
+  useRequireLogin()
+
   const [sunday, setSunday] = useState(
     today.getTime() - today.getDay() * lengthOfDay,
   )

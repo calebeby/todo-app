@@ -74,6 +74,7 @@ export const Signup = () => {
       </label>
       <button>Sign Up</button>
       {error && <div class="input-error">{error}</div>}
+      <a href="/login">Log in</a>
     </form>
   )
 }

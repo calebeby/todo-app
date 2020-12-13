@@ -1,6 +1,17 @@
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import { route } from './app'
-import { makeRequest, setToken } from './request'
+import { getToken, makeRequest, setToken } from './request'
+
+/**
+ * Rederects to the login page if the user is not signed in
+ * or if their login token is expired
+ */
+export const useRequireLogin = () => {
+  useEffect(() => {
+    const token = getToken()
+    if (token === null) route('/login')
+  }, [])
+}
 
 export const Login = () => {
   const [username, setUsername] = useState('')
@@ -47,6 +58,7 @@ export const Login = () => {
       </label>
       <button>Log in</button>
       {error && <div class="input-error">{error}</div>}
+      <a href="/signup">Sign up</a>
     </form>
   )
 }

@@ -1,11 +1,14 @@
 import { useState } from 'preact/hooks'
 import { createTaskPopup } from './create-task-popup'
+import { useRequireLogin } from './login'
 import { updateTask, useTasks } from './state'
 import { getDaysOfMonth } from './utilities'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const now = new Date()
 
 export const MonthView = () => {
+  useRequireLogin()
+
   const [first, setFirst] = useState(
     now.getTime() - lengthOfDay * (now.getDate() - 1),
   )
