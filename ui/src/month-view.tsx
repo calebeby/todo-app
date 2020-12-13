@@ -1,9 +1,12 @@
+import { mdiArrowLeftBold, mdiArrowRightBold } from '@mdi/js'
 import { useState } from 'preact/hooks'
 import { createTaskPopup } from './create-task-popup'
 import { useSetLastView } from './home'
 import { useRequireLogin } from './login'
 import { updateTask, useTasks } from './state'
 import { getDaysOfMonth } from './utilities'
+import { Icon } from './icon'
+import { Tabs } from './tabs'
 const lengthOfDay = 24 * 60 * 60 * 1000
 const now = new Date()
 
@@ -30,20 +33,21 @@ export const MonthView = () => {
   return (
     <div class="month-view">
       <div class="month-view-header">
+        <Tabs active="/month" />
         <h1>
           {new Date(first).toLocaleDateString('en-US', {
             month: 'long',
             year: 'numeric',
           })}
         </h1>
-        <div>
+        <div class="arrow-buttons">
           <button
             onClick={() => {
               const firstOfMonth = new Date(first)
               setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() - 1))
             }}
           >
-            previous
+            <Icon icon={mdiArrowLeftBold} />
           </button>
           <button
             onClick={() => {
@@ -51,7 +55,7 @@ export const MonthView = () => {
               setFirst(firstOfMonth.setMonth(firstOfMonth.getMonth() + 1))
             }}
           >
-            next
+            <Icon icon={mdiArrowRightBold} />
           </button>
         </div>
       </div>

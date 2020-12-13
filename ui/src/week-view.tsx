@@ -1,6 +1,9 @@
 import { useState } from 'preact/hooks'
 import { updateTask, useTasks } from './state'
 import { createTaskPopup } from './create-task-popup'
+import { Icon } from './icon'
+import { mdiArrowLeftBold, mdiArrowRightBold } from '@mdi/js'
+import { Tabs } from './tabs'
 import { useSetLastView } from './home'
 import { useRequireLogin } from './login'
 const lengthOfDay = 24 * 60 * 60 * 1000
@@ -32,7 +35,7 @@ export const WeekView = () => {
   return (
     <div class="week-view">
       <div class="weekview-header">
-        <h1>Week View</h1>
+        <Tabs active="/week" />
         <h1>
           {daysOfWeek[0].getMonth() === daysOfWeek[6].getMonth()
             ? daysOfWeek[0].toLocaleDateString('en-US', { month: 'long' })
@@ -42,20 +45,20 @@ export const WeekView = () => {
                 month: 'long',
               })}`}
         </h1>
-        <div>
+        <div class="arrow-buttons">
           <button
             onClick={() => {
               setSunday(sunday - lengthOfWeek)
             }}
           >
-            previous
+            <Icon icon={mdiArrowLeftBold} />
           </button>
           <button
             onClick={() => {
               setSunday(sunday + lengthOfWeek)
             }}
           >
-            next
+            <Icon icon={mdiArrowRightBold} />
           </button>
         </div>
       </div>

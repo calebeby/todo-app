@@ -6,7 +6,7 @@ import { makeRequest } from './request'
 import { updateTask, useTasks } from './state'
 import { TaskWithLabels } from './task'
 import { getColorBrightness } from './utilities'
-
+import { Tabs } from './tabs'
 type Column = Label & { is_column: true }
 
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -30,7 +30,9 @@ export const ListView = () => {
 
   return (
     <div class="list-view">
-      <h1>List View</h1>
+      <div class="list-view-header">
+        <Tabs active="/list" />
+      </div>
       <div class="list-view-lists">
         <Column
           key="unlabeled"

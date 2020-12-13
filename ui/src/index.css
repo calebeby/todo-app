@@ -42,7 +42,7 @@ button {
   border: 1px solid rgb(177, 177, 177);
   border-top: 0;
   border-bottom: 0;
-  padding: 0 10px;
+  padding: 10px;
 }
 
 .weekday-header {
@@ -87,13 +87,29 @@ button {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 10px;
+  border-bottom: 1px solid black;
 }
 
-.weekview-header :last-child {
+.arrow-buttons {
   justify-self: end;
+  display: grid;
+  grid-auto-flow: column;
+}
+.arrow-buttons button {
+  background: transparent;
+  border: none;
+  display: flex;
 }
 
+.arrow-buttons button svg {
+  width: 1.5rem;
+}
+
+.arrow-buttons button:hover,
+.arrow-buttons button:focus {
+  outline: none;
+  color: rgba(0, 0, 0, 0.6);
+}
 .weekview-create-task {
   font-weight: bold;
   width: 100%;
@@ -182,11 +198,13 @@ button {
   grid-template-columns: 1fr;
   grid-template-rows: auto auto 1fr;
   height: 100vh;
+  grid-gap: 0.5rem;
 }
 
 .month-view-header {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto 1fr;
+  border-bottom: 1px solid black;
   align-items: center;
 }
 
@@ -368,6 +386,13 @@ button {
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr;
   height: 100vh;
+  overflow-y: hidden;
+}
+
+.list-view-header {
+  display: grid;
+  border-bottom: 1px solid black;
+  min-height: 2.3rem;
 }
 
 .list-view-lists {
@@ -394,3 +419,28 @@ button {
   padding: 0;
   margin: 0;
 }
+
+.tabs {
+  padding: 0 0.2rem;
+  display: grid;
+  align-self: end;
+  justify-self: start;
+  grid-auto-flow: column;
+}
+.tabs a {
+  display: block;
+  padding: 0.3rem 0.3rem;
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0.3rem;
+  border: 1px solid black;
+  border-bottom: 0;
+  text-decoration: none;
+  color: black;
+}
+
+.tabs a:hover,
+.tabs a:focus {
+  background: rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
