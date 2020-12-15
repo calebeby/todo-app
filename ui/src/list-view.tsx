@@ -9,7 +9,6 @@ import { mdiPencil } from '@mdi/js'
 import { Icon } from './icon'
 import { createTaskPopup } from './create-task-popup'
 
-//What about the tasks with labels that are not columns? they need to go into the unlabeled category.
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
 
 export const ListView = () => {
@@ -90,7 +89,6 @@ const Column = ({
         else if (id !== 'unlabeled' && oldColId !== 'done') {
           //remove old label
           let updatedLabels = draggedTask.labels.filter(
-            //Do we want the old label to be removed or no??
             (labelId) => String(labelId) !== oldColId,
           )
           //add new label
