@@ -7,6 +7,7 @@ import { updateTask, useTasks } from './state'
 import { TaskWithLabels } from './task'
 import { getColorBrightness } from './utilities'
 import { Tabs } from './tabs'
+import { createTaskPopup } from './create-task-popup'
 type Column = Label & { is_column: true }
 
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -32,6 +33,7 @@ export const ListView = () => {
     <div class="list-view">
       <div class="list-view-header">
         <Tabs active="/list" />
+        <button onClick={() => createTaskPopup({})}>+</button>
       </div>
       <div class="list-view-lists">
         <Column

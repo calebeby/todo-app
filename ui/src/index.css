@@ -391,8 +391,30 @@ button {
 
 .list-view-header {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid black;
   min-height: 2.3rem;
+  max-width: 100vw;
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
+.list-view-header button {
+  justify-self: end;
+  align-self: center;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  border-radius: 0.3rem;
+  background: rgba(67, 160, 71, 0.15);
+  padding: 0.3rem 0.6rem;
+  border: none;
+}
+
+.list-view-header button:hover,
+.list-view-header button:focus {
+  background: rgba(67, 160, 71, 0.6);
+  outline: none;
 }
 
 .list-view-lists {
@@ -443,4 +465,3 @@ button {
   background: rgba(0, 0, 0, 0.1);
   outline: none;
 }
-
