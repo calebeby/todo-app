@@ -70,10 +70,12 @@ const main = async () => {
   })
   await client.connect()
 
+  // Test endpoint
   app.get('/', async (req, res) => {
     res.end('hello world')
   })
 
+  // Create a new task
   app.post('/tasks', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     if (typeof req.body !== 'object')
@@ -102,6 +104,7 @@ const main = async () => {
     }
   })
 
+  // Update a single task
   app.put('/tasks/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     if (typeof req.params.id !== 'string')
@@ -132,7 +135,7 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
-  // retrieve task based on ID, with its labels
+  // Retrieve task based on ID, with its labels
   app.get('/tasks/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
@@ -149,7 +152,7 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
-  // delete task based on ID
+  // Delete task based on ID
   app.delete('/tasks/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
@@ -162,6 +165,7 @@ const main = async () => {
     else send(res, 200, {})
   })
 
+  // Get all tasks, with their associated label IDs
   app.get('/tasks', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     let q = query.select`title, description, due_date, is_done, id,
@@ -180,8 +184,8 @@ const main = async () => {
     send(res, 200, queryResult.rows)
   })
 
-  //label///////////////////////////////////
-  //create new label
+  //// labels ///////////////////////////////////
+  // Create new label
   app.post('/labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     if (typeof req.body !== 'object')
@@ -207,7 +211,7 @@ const main = async () => {
       send(res, 500)
     }
   })
-  //update label
+  // Update a label
   app.put('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     if (typeof req.params.id !== 'string')
@@ -231,7 +235,7 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
-  //get all labels
+  // Get all labels
   app.get('/labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
@@ -243,7 +247,7 @@ const main = async () => {
     send(res, 200, queryResult.rows)
   })
 
-  //get an individual label
+  // Get an individual label
   app.get('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
@@ -256,7 +260,7 @@ const main = async () => {
     else send(res, 200, queryResult.rows[0])
   })
 
-  // Delete a specific label
+  // Delete a label
   app.delete('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
@@ -269,10 +273,10 @@ const main = async () => {
     send(res, 200, {})
   })
 
-  // Updates the labels associated with a task to whatever you pass in
-  // Pass an array of integers (label ids) to associate with the task
+  // Sets which labels are associated with a task
   app.put('/tasks/:id/labels', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
+    // Pass an array of integers (label ids) to associate with the task
     if (
       !Array.isArray(req.body) ||
       !req.body.every((item) => typeof item === 'number')
@@ -284,8 +288,8 @@ const main = async () => {
 
     // Query: Remove any labels associated with that task that are not in the array of labels
     // Makes sure that the user who makes the request owns the task and the label
-    // This query uses select(unnest(array)) instead of ANY(array)
-    // because ANY(array) wouldn't remove items when the array was empty
+    // Note: This query uses select(unnest(array)) instead of ANY(array)
+    // because ANY(array) won't remove items when the array was empty
     const deletePromise = client.query(sql`
       DELETE FROM task_label
       USING task, label
@@ -315,6 +319,7 @@ const main = async () => {
     send(res, 200, {})
   })
 
+  // Create a user. Returns the userId and the login token (JWT)
   app.post('/users', async (req, res) => {
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to create a user')
@@ -357,6 +362,7 @@ const main = async () => {
     send(res, 201, { id, token })
   })
 
+  // Update a user
   app.put('/users/:id', async (req, res) => {
     if (typeof req.params.id !== 'string')
       return send(res, 400, 'user id required')
@@ -390,6 +396,7 @@ const main = async () => {
     send(res, 200, queryResult.rows[0])
   })
 
+  // Get a single user
   app.get('/users/:id', async (req, res) => {
     const id = Number(req.params.id)
     if (req.userId !== id)
@@ -402,6 +409,7 @@ const main = async () => {
     send(res, 200, queryResult.rows[0])
   })
 
+  // Authenticate by checking username/password and returning a login token (JWT)
   app.post('/authenticate', async (req, res) => {
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to authenticate')
