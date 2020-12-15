@@ -207,7 +207,7 @@ const main = async () => {
       send(res, 500)
     }
   })
-  //update labels
+  //update label
   app.put('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     if (typeof req.params.id !== 'string')
@@ -243,18 +243,17 @@ const main = async () => {
     send(res, 200, queryResult.rows)
   })
 
-  //get all tasks associated with a specific label id
+  //get an individual label
   app.get('/labels/:id', async (req, res) => {
     if (req.userId === undefined) return send(res, 401)
     const queryResult = await client.query(sql`
       SELECT *
-      FROM "task_label","task"
-      WHERE ${req.params.id} = task_label.label_id
-        AND task.id = task_label.task_id
-        AND label.user_id = ${req.userId}
+      FROM "label"
+      WHERE label.user_id = ${req.userId}
+        AND label.id = ${req.params.id}
     `)
     if (queryResult.rows.length === 0) send(res, 404, 'label does not exist')
-    else send(res, 200, queryResult.rows)
+    else send(res, 200, queryResult.rows[0])
   })
 
   // Delete a specific label
@@ -316,17 +315,6 @@ const main = async () => {
     send(res, 200, {})
   })
 
-  // get all labels that are columns
-  app.get('/column_labels', async (req, res) => {
-    if (req.userId === undefined) return send(res, 401)
-    const queryResult = await client.query(sql`
-      SELECT *
-      FROM "label"
-      WHERE label.is_column = true AND user_id = ${req.userId};
-    `)
-
-    send(res, 200, queryResult.rows)
-  })
   app.post('/users', async (req, res) => {
     if (typeof req.body !== 'object')
       return send(res, 400, 'request body is required to create a user')

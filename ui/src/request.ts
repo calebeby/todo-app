@@ -1,5 +1,4 @@
 import { Task } from './task'
-import { Label } from './label'
 
 let cachedToken: string | null = null
 
@@ -50,9 +49,3 @@ export const parseDueDate = <T extends Task & { due_date: string }>(
   ...task,
   due_date: new Date(task.due_date),
 })
-
-export const getAllLabels = async () => {
-  const res = await makeRequest('/labels')
-  if (res.ok) return (res.data as Label[]).sort((a, b) => a.id - b.id)
-  throw new Error(res.data)
-}

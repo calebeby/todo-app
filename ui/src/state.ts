@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'preact/hooks'
+import { Label } from './label'
 import { makeRequest, parseDueDate } from './request'
 import { Task, TaskWithLabels } from './task'
-
-export const useTaskChanges = (taskListener: TaskListener) => {
-  useEffect(() => {
-    taskChangeListeners.add(taskListener)
-    return () => taskChangeListeners.delete(taskListener)
-  }, [taskListener])
-}
 
 export const updateTask = async (
   partialTask: Partial<TaskWithLabels>,
@@ -144,7 +138,7 @@ export const useTask = (taskId: number) => {
       updateTasks([taskWithLabels])
       setTask(taskWithLabels)
     })
-  }, [])
+  }, [taskId])
 
   useEffect(() => {
     const taskListener: TaskListener = (oldTask, updatedTask) => {
@@ -163,7 +157,110 @@ export const useTask = (taskId: number) => {
     taskChangeListeners.add(taskListener)
 
     return () => taskChangeListeners.delete(taskListener)
-  }, [])
+  }, [taskId])
 
   return task
+}
+
+interface LabelListener {
+  (labelId: number, label: Label | undefined): void
+}
+
+const allLabels = new Map<number, Label>()
+const labelChangeListeners = new Set<LabelListener>()
+
+export const useLabel = (labelId: number) => {
+  const [label, setLabel] = useState(allLabels.get(labelId))
+
+  useEffect(() => {
+    makeRequest(`/labels/${labelId}`).then((res) => {
+      const label = res.data as Label
+      allLabels.set(labelId, label)
+      labelChangeListeners.forEach((listener) => listener(labelId, label))
+    })
+  }, [labelId])
+
+  useEffect(() => {
+    const labelListener: LabelListener = (changedLabelId, label) => {
+      if (changedLabelId === labelId) setLabel(label)
+    }
+    labelChangeListeners.add(labelListener)
+
+    return () => labelChangeListeners.delete(labelListener)
+  }, [labelId])
+
+  return label
+}
+
+export const useAllLabels = () => {
+  const [labels, setLabels] = useState<Label[]>([...allLabels.values()])
+
+  useEffect(() => {
+    makeRequest(`/labels`).then((res) => {
+      const labels = res.data as Label[]
+      labels.forEach((label) => {
+        allLabels.set(label.id, label)
+        labelChangeListeners.forEach((listener) => listener(label.id, label))
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    const labelListener: LabelListener = () => {
+      setLabels([...allLabels.values()])
+    }
+    labelChangeListeners.add(labelListener)
+
+    return () => labelChangeListeners.delete(labelListener)
+  }, [])
+
+  return labels
+}
+
+export const updateLabel = async (label: Partial<Label>, labelId: number) => {
+  const res = await makeRequest(`/labels/${labelId}`, {
+    method: 'PUT',
+    body: JSON.stringify(label),
+  })
+  const updatedLabel = res.data as Label
+  if (res.ok) {
+    allLabels.set(labelId, updatedLabel)
+    labelChangeListeners.forEach((listener) => listener(labelId, updatedLabel))
+  }
+}
+
+export const deleteLabel = async (labelId: number) => {
+  const res = await makeRequest(`/labels/${labelId}`, { method: 'DELETE' })
+  if (res.ok) {
+    allLabels.delete(labelId)
+    // notify label listeners that the label doesn't exist anymore
+    labelChangeListeners.forEach((listener) => listener(labelId, undefined))
+
+    // also notify task listeners that had the (deleted) label
+    allTasks.forEach((oldTask) => {
+      const filteredLabelsList = oldTask.labels.filter((l) => l !== labelId)
+
+      // if task didn't have the deleted label, don't update the task
+      if (filteredLabelsList.length === oldTask.labels.length) return
+
+      const updatedTask = { ...oldTask, labels: filteredLabelsList }
+      allTasks.set(oldTask.id, updatedTask)
+      taskChangeListeners.forEach((listener) => listener(oldTask, updatedTask))
+    })
+    return true
+  }
+}
+
+export const createLabel = async (newLabel: Omit<Label, 'id'>) => {
+  const res = await makeRequest('/labels', {
+    method: 'POST',
+    body: JSON.stringify(newLabel),
+  })
+  if (res.ok) {
+    const id = res.data.id as number
+    const label = { ...newLabel, id }
+    allLabels.set(id, label)
+    labelChangeListeners.forEach((listener) => listener(id, label))
+    return id
+  }
 }

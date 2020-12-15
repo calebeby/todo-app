@@ -50,3 +50,19 @@ export const useUnmountEffect = (callback: () => void) => {
     }
   }, [])
 }
+
+export const isDescendent = (
+  descendentEl: Element | null,
+  parentEl: Element,
+) => {
+  while (descendentEl !== null) {
+    if (descendentEl === parentEl) return true
+    descendentEl = descendentEl.parentElement
+  }
+  return false
+}
+
+export const randomColor = () => {
+  // https://css-tricks.com/snippets/javascript/random-hex-color/
+  return '#' + Math.floor(Math.random() * 16777215).toString(16)
+}

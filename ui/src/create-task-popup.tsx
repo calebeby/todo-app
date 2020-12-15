@@ -19,13 +19,15 @@ const CreateTaskPopup = ({ task }: { task: Partial<TaskWithLabels> }) => {
         class="create-task-popup"
         onSubmit={async (e) => {
           e.preventDefault()
+          const title = inputRef.current.value
+          if (!title) return
 
           const newTask = {
             description: '',
             due_date: new Date(),
             is_done: false,
             ...task,
-            title: inputRef.current.value,
+            title,
           }
           const id = await createTask(newTask)
           closePopup()

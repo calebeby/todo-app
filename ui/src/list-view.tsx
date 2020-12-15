@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'preact/hooks'
 import { useSetLastView } from './home'
-import { Label } from './label'
 import { useRequireLogin } from './login'
-import { makeRequest } from './request'
-import { updateTask, useTasks } from './state'
+import { updateTask, useAllLabels, useTasks } from './state'
 import { TaskWithLabels } from './task'
 import { getColorBrightness } from './utilities'
 import { Tabs } from './tabs'
+import { createLabelPopup } from './label-popup'
+import { mdiPencil } from '@mdi/js'
+import { Icon } from './icon'
 import { createTaskPopup } from './create-task-popup'
-type Column = Label & { is_column: true }
 
 const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
 
@@ -16,18 +15,10 @@ export const ListView = () => {
   useSetLastView('/list')
   useRequireLogin()
 
+  const columns = useAllLabels().filter((label) => label.is_column)
+
   const tasks = useTasks({ is_done: false }, [])
   const doneTasksInLastWeek = useTasks({ is_done: true, start: oneWeekAgo }, [])
-
-  const [columns, setColumns] = useState<Column[]>([])
-
-  useEffect(() => {
-    makeRequest('/column_labels').then((res) => {
-      if (!res.ok) return
-      const columns = res.data
-      setColumns(columns)
-    })
-  }, [])
 
   return (
     <div class="list-view">
@@ -45,6 +36,7 @@ export const ListView = () => {
           return (
             <Column
               key={column.id}
+              labelId={column.id}
               tasks={tasks.filter((task) => task.labels.includes(column.id))}
               name={column.name}
               color={column.color}
@@ -61,10 +53,12 @@ const Column = ({
   tasks,
   name,
   color,
+  labelId,
 }: {
   tasks: TaskWithLabels[]
   name: string
   color?: string
+  labelId?: number
 }) => {
   return (
     <div class="list-view-list">
@@ -75,6 +69,11 @@ const Column = ({
         }}
       >
         {name}
+        {labelId !== undefined && (
+          <button onClick={() => createLabelPopup(labelId)}>
+            <Icon icon={mdiPencil} />
+          </button>
+        )}
       </h2>
       <ul>
         {tasks
