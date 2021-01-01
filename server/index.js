@@ -18,6 +18,7 @@ const dbAuth =
     ? {
         user: DB_USER,
         password: DB_PASSWORD,
+        database: 'todo-app',
       }
     : DATABASE_URL
     ? {
@@ -80,7 +81,6 @@ app.use((req, res, next) => {
 const main = async () => {
   const client = new pg.Client({
     ...dbAuth,
-    database: 'todo-app',
   })
   await client.connect()
 
