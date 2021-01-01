@@ -11,10 +11,25 @@ import bcrypt from 'bcrypt'
 // Load environment variables from .env file
 dotenv.config()
 
-const { DB_USER, DB_PASSWORD, ACCESS_TOKEN_SECRET } = process.env
+const { DB_USER, DB_PASSWORD, ACCESS_TOKEN_SECRET, DATABASE_URL } = process.env
 
-if (!DB_USER) throw new Error('Database user is required')
-if (!DB_PASSWORD) throw new Error('Database password is required')
+const dbAuth =
+  DB_USER && DB_PASSWORD
+    ? {
+        user: DB_USER,
+        password: DB_PASSWORD,
+      }
+    : DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      }
+    : undefined
+
+if (!dbAuth)
+  throw new Error(
+    'Database username/password is required. Specify DB_USER and DB_PASSWORD',
+  )
 if (!ACCESS_TOKEN_SECRET) throw new Error('Access token secret is required')
 
 const app = polka()
@@ -64,8 +79,6 @@ app.use((req, res, next) => {
 
 const main = async () => {
   const client = new pg.Client({
-    user: DB_USER,
-    password: DB_PASSWORD,
     database: 'todo-app',
   })
   await client.connect()
