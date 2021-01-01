@@ -30,9 +30,11 @@ export const parseToken = (token: string) => {
   return JSON.parse(atob(token.split('.')[1])) as JWT
 }
 
+const apiUrl = process.env.API_URL || 'https://todoooo-server.herokuapp.com'
+
 export const makeRequest = async (url: string, options: RequestInit = {}) => {
   const token = getToken()
-  const res = await fetch(`http://localhost:5000${url}`, {
+  const res = await fetch(apiUrl + url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',

@@ -17,3 +17,5 @@ declare namespace Intl {
     dayPeriod?: string
   }
 }
+
+declare const process: { env: { API_URL?: string } }
