@@ -1,0 +1,3 @@
+# netlify uses this so that if you go to /anything it loads index.html
+
+/*   /index.html   200

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build-ui": "vite build ui",
+    "build-ui": "vite build ui && cp _redirects ui/dist",
     "dev-ui": "vite ui",
     "dev-server": "cd server && nodemon ."
   },
