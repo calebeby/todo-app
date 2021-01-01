@@ -2,9 +2,19 @@
   "name": "todo-app",
   "version": "1.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "build-ui": "vite build ui",
+    "dev-ui": "vite ui",
+    "dev-server": "cd server && nodemon ."
+  },
   "devDependencies": {
+    "@mdi/js": "^5.8.55",
+    "@prefresh/vite": "^1.2.3",
+    "matchit": "^1.1.0",
+    "preact": "^10.5.8",
     "prettier": "^2.2.1",
-    "typescript": "^4.1.2"
+    "todo-server": "./server",
+    "typescript": "^4.1.3",
+    "vite": "^1.0.0-rc.9"
   }
 }

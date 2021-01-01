@@ -2,7 +2,7 @@ import pg from 'pg'
 import polka from 'polka'
 import { sql, query } from 'sqliterally'
 import * as dotenv from 'dotenv'
-import { json } from 'body-parser'
+import bodyParser from 'body-parser'
 import send from '@polka/send-type'
 import cors from 'cors'
 import jwt from 'jsonwebtoken'
@@ -19,7 +19,7 @@ if (!ACCESS_TOKEN_SECRET) throw new Error('Access token secret is required')
 
 const app = polka()
 
-app.use(json())
+app.use(bodyParser.json())
 app.use(cors({ origin: '*' }))
 
 const jwtPrefix = 'Bearer '
